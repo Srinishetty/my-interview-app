@@ -1,12 +1,12 @@
 import { LightningElement } from 'lwc';
 
-export default class App extends LightningElement {
+export default class Application extends LightningElement {
     categories = [];
     selectedCategory = null;
 
     async connectedCallback() {
         try {
-            const response = await fetch('/questions.json');
+            const response = await fetch('data/questions.json');
             const data = await response.json();
             this.categories = data.categories.map(category => ({
                 ...category,
