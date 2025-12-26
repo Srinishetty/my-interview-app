@@ -1,0 +1,35 @@
+<template>
+    <div class="app-container">
+        <header>
+            <h1>Salesforce Interview Prep</h1>
+        </header>
+        <main>
+            <div class="tabs">
+                <template for:each={categories} for:item="category">
+                    <button key={category.name} class={category.className} onclick={handleTabClick}>{category.name}</button>
+                </template>
+            </div>
+            <div class="content">
+                <template if:true={selectedCategory}>
+                    <div class="question-list">
+                        <template for:each={selectedCategory.questions} for:item="q">
+                            <div key={q.question} class="card">
+                                <div class="question">
+                                    <p>{q.question}</p>
+                                </div>
+                                <div class="answer">
+                                    <template if:true={q.reveal}>
+                                        <p>{q.answer}</p>
+                                    </template>
+                                </div>
+                                <button class="toggle-answer" data-question={q.question} onclick={toggleAnswer}>
+                                    {q.revealLabel}
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </main>
+    </div>
+</template>

@@ -1,0 +1,6 @@
+.container { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+.tab-bar { border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+.tab-button { padding: 10px 20px; cursor: pointer; border: none; background: none; font-size: 16px; }
+.tab-button:hover { color: #0070d2; }
+.card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; background: #f9f9f9; }
+h3 { color: #0070d2; margin-top: 0; }
