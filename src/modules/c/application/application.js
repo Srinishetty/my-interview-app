@@ -6,7 +6,8 @@ export default class Application extends LightningElement {
 
     async connectedCallback() {
         try {
-            const response = await fetch('data/questions.json');
+                const base = typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL ? import.meta.env.BASE_URL : '/';
+                const response = await fetch(`${base}questions.json`);
             const data = await response.json();
             this.categories = data.categories.map(category => ({
                 ...category,
