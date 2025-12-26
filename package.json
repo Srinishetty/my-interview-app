@@ -1,6 +1,6 @@
 {
   "name": "my-interview-app",
-  "homepage": "https://<YOUR_GITHUB_USERNAME>.github.io/<YOUR_REPOSITORY_NAME>",
+  "homepage": "https://Srinishetty.github.io/my-interview-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,7 +12,7 @@
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
-    "gh-pages": "^6.1.1",
+    "gh-pages": "^6.3.0",
     "vite": "npm:rolldown-vite@7.2.5",
     "vite-plugin-lwc": "^4.1.0"
   },
