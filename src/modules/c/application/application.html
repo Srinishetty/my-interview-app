@@ -87,20 +87,20 @@
                         <h2 class="view-title">Select a Test</h2>
                         <p class="view-subtitle">Choose a test to practice with</p>
                     </div>
-<div class="test-grid">
-    <template for:each={tests} for:item="test">
-        <div key={test.name} class="test-card">
-            <div class="test-header">
-                <h3 class="test-name">{test.name}</h3>
-                <span class="test-count">{test.questionCount} questions</span>
-            </div>
-            <p class="test-desc">Questions {test.range}</p>
-            <button data-test={test.name} onclick={handleTestClick} class="start-test-btn">
-                Start Test
-            </button>
-        </div>
-    </template>
-</div>
+                    <div class="test-grid">
+                        <template for:each={tests} for:item="test">
+                            <div key={test.name} class="test-card">
+                                <div class="test-header">
+                                    <h3 class="test-name">{test.name}</h3>
+                                    <span class="test-count">{test.questionCount} questions</span>
+                                </div>
+                                <p class="test-desc">Questions {test.range}</p>
+                                <button data-test={test.name} onclick={handleTestClick} class="start-test-btn">
+                                    Start Test
+                                </button>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </template>
 
@@ -135,24 +135,24 @@
                                     <p class="question-text">{q.question}</p>
 
                                     <template if:true={q.optionItems}>
-                                        <div class="options-container">
-                                            <template for:each={q.optionItems} for:item="item">
-                                                <label key={item.key} class="option-item" class:selected={item.selected}>
-                                                    <input
-                                                        type="radio"
-                                                        name={q.question}
-                                                        data-question={q.question}
-                                                        data-option={item.key}
-                                                        onchange={handleOptionChange}
-                                                        checked={item.selected}
-                                                        disabled={q.isSubmitted}
-                                                    >
-                                                    <span class="option-text">
-                                                        <strong>{item.key}.</strong> {item.value}
-                                                    </span>
-                                                </label>
-                                            </template>
-                                        </div>
+                                    <div class="options-container">
+                                        <template for:each={q.optionItems} for:item="item">
+                                            <label key={item.key} class="option-item" class:selected={item.selected}>
+                                                <input
+                                                    type="radio"
+                                                    name={q.question}
+                                                    data-question={q.question}
+                                                    data-option={item.key}
+                                                    onchange={handleOptionChange}
+                                                    checked={item.selected}
+                                                    disabled={q.isSubmitted}
+                                                >
+                                                <span class="option-text">
+                                                    <strong>{item.key}.</strong> {item.value} <br>
+                                                </span>
+                                            </label>
+                                        </template>
+                                    </div>
                                     </template>
                                 </div>
 
@@ -213,6 +213,7 @@
                         <button class="pagination-btn next" onclick={nextPage} disabled={isLastPage}>
                             Next →
                         </button>
+                        <button onclick={checkScore} class="check-score-btn">Check Score</button>
                     </div>
                 </div>
             </template>

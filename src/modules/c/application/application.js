@@ -252,6 +252,7 @@ export default class Application extends LightningElement {
     }
 
     handleOptionChange(event) {
+        debugger;
         const questionText = event.target.dataset.question;
         const optionKey = event.target.dataset.option;
         const isChecked = event.target.checked;
@@ -280,6 +281,7 @@ export default class Application extends LightningElement {
     }
 
     handleSubmit(event) {
+        debugger;
         const questionText = event.target.dataset.question;
         if (!this.selectedCategory) return;
 
@@ -288,7 +290,10 @@ export default class Application extends LightningElement {
                 const correctAnswer = q.answer;
                 const isCorrect = q.selectedOptions.includes(correctAnswer);
                 const feedback = isCorrect ? 'Correct!' : `Incorrect. The correct answer is ${correctAnswer}.`;
-
+                console.log('Correct Answer:', correctAnswer);
+                console.log('isCorrect:', isCorrect);
+                console.log('Selected Options:', q.selectedOptions);
+                console.log('Feedback:', feedback);
                 const newOptionItems = q.optionItems?.map(item => ({
                     ...item,
                     class: item.key === correctAnswer ? 'correct' :
@@ -548,4 +553,17 @@ export default class Application extends LightningElement {
             [optionKey]: value
         };
     }
+
+checkScore() {
+    const numQuestions = this.pagedQuestions.length;
+    let numCorrect = 0;
+
+    for (const q of this.pagedQuestions) {
+        if (q.isSubmitted && q.feedbackClassString === 'correct') {
+            numCorrect++;
+        }
+    }
+
+    alert(`Score: ${numCorrect} / ${numQuestions}`);
+}
 }
