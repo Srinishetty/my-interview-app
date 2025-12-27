@@ -1,69 +1,385 @@
+<!-- @lwc -->
 <template>
     <div class="app-container">
-        <header>
-            <h1>Practies Q&A</h1>
-        </header>
-        <template if:true={showCategoryPage}>
-            <div class="category-grid">
-                <template for:each={categories} for:item="category">
-                    <div key={category.name} data-name={category.name} onclick={handleTabClick} class={category.cardClass}>
-                        <div class="card-left" aria-hidden="true"></div>
-                        <div class="card-right">
-                            <h2 class="card-title">{category.name}</h2>
-                            <p class="card-desc">Practice questions and flashcards for {category.name}.</p>
-                        </div>
-                    </div>
-                </template>
+        <!-- Loading State -->
+        <template if:true={isLoading}>
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading questions...</p>
             </div>
         </template>
 
-        <template if:false={showCategoryPage}>
-            <div class="category-page">
-                <button class="back" onclick={backToHome} aria-label="Back to categories">← Back</button>
-                <h2 class="page-title">{selectedCategory.name}</h2>
-                <div class="question-list">
-                    <template for:each={pagedQuestions} for:item="q">
-                        <div key={q.question} class="card">
-                            <div class="question">
-                                <p><strong>Question {q.number} :</strong> {q.question}</p>
-                                <template if:true={q.optionItems}>
-                                    <div class="options">
-                                        <template for:each={q.optionItems} for:item="item">
-                                            <label key={item.key} class={item.class}>
-                                                <input type="checkbox" data-question={q.question} data-option={item.key} onchange={handleOptionChange} checked={item.selected} disabled={q.isSubmitted}>
-                                                {item.key}. {item.value}
-                                            </label>
-                                        </template>
+        <!-- Error State -->
+        <template if:true={hasError}>
+            <div class="error-container">
+                <h2>Oops! Something went wrong</h2>
+                <p>{error}</p>
+                <button class="retry-btn" onclick={loadData}>Try Again</button>
+            </div>
+        </template>
+
+        <!-- Main Content -->
+        <template if:false={isLoading}>
+            <header class="app-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1 class="app-title">Practice Q&A</h1>
+                        <p class="app-subtitle">Master your skills with interactive practice questions</p>
+                    </div>
+                    <div class="header-right">
+                        <button class="admin-toggle-btn" onclick={toggleAdminMode}>
+                            {adminButtonLabel}
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Home View - Category Selection -->
+            <template if:true={showHome}>
+                <div class="home-view">
+                    <div class="welcome-section">
+                        <h2>Welcome to Practice Q&A</h2>
+                        <p>Choose a category to start practicing</p>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input
+                                type="text"
+                                placeholder="Search categories or questions..."
+                                oninput={handleSearchChange}
+                                class="search-input"
+                            >
+                            <div class="search-icon">🔍</div>
+                        </div>
+                    </div>
+
+                    <div class="category-grid">
+                        <template for:each={filteredCategories} for:item="category">
+                            <div key={category.name} data-name={category.name} onclick={handleTabClick} class="category-card">
+                                <div class="card-icon" aria-hidden="true">📚</div>
+                                <div class="card-content">
+                                    <h3 class="card-title">{category.name}</h3>
+                                    <p class="card-desc">Practice questions for {category.name}</p>
+                                    <span class="question-count">{category.questions.length} questions</span>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:false={filteredCategories.length}>
+                            <div class="no-results">
+                                <div class="no-results-icon">🤔</div>
+                                <h3>No categories found</h3>
+                                <p>Try adjusting your search terms</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Test Selection View -->
+            <template if:true={showTestSelection}>
+                <div class="test-selection-view">
+                    <div class="view-header">
+                        <button class="back-btn" onclick={backToHome} aria-label="Back to Home">
+                            ← Back to Categories
+                        </button>
+                        <h2 class="view-title">Select a Test</h2>
+                        <p class="view-subtitle">Choose a test to practice with</p>
+                    </div>
+
+                    <div class="test-grid">
+                        <template for:each={testsWithRanges} for:item="test">
+                            <div key={test.name} class="test-card">
+                                <div class="test-header">
+                                    <h3 class="test-name">{test.name}</h3>
+                                    <span class="test-count">{test.questionCount} questions</span>
+                                </div>
+                                <p class="test-desc">Questions {test.range}</p>
+                                <button data-test={test.name} onclick={handleTestClick} class="start-test-btn">
+                                    Start Test
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Questions View -->
+            <template if:true={showQuestions}>
+                <div class="questions-view">
+                    <div class="view-header">
+                        <button class="back-btn" onclick={backHandler} aria-label="Go Back">
+                            ← {backButtonText}
+                        </button>
+                        <div class="view-info">
+                            <h2 class="view-title">{currentTitle}</h2>
+                            <p class="view-subtitle">{questionRangeText}</p>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" style={progressStyle}></div>
+                    </div>
+
+                    <div class="question-list">
+                        <template for:each={pagedQuestions} for:item="q">
+                            <div key={q.question} class="question-card">
+                                <div class="question-header">
+                                    <span class="question-number">Question {q.number}</span>
+                                    <template if:true={q.isSubmitted}>
+                                        <span class="question-status correct">✓ Answered</span>
+                                    </template>
+                                </div>
+
+                                <div class="question-content">
+                                    <p class="question-text">{q.question}</p>
+
+                                    <template if:true={q.optionItems}>
+                                        <div class="options-container">
+                                            <template for:each={q.optionItems} for:item="item">
+                                                <label key={item.key} class="option-item" class:selected={item.selected}>
+                                                    <input
+                                                        type="radio"
+                                                        name={q.question}
+                                                        data-question={q.question}
+                                                        data-option={item.key}
+                                                        onchange={handleOptionChange}
+                                                        checked={item.selected}
+                                                        disabled={q.isSubmitted}
+                                                    >
+                                                    <span class="option-text">
+                                                        <strong>{item.key}.</strong> {item.value}
+                                                    </span>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <div class="question-actions">
+                                    <button
+                                        class="submit-btn"
+                                        data-question={q.question}
+                                        onclick={handleSubmit}
+                                        disabled={q.isSubmitted}
+                                    >
+                                        {q.submitButtonText}
+                                    </button>
+
+                                    <button
+                                        class="reveal-btn"
+                                        data-question={q.question}
+                                        onclick={toggleAnswer}
+                                    >
+                                        {q.revealLabel}
+                                    </button>
+                                </div>
+
+                                <template if:true={q.reveal}>
+                                    <div class="answer-section">
+                                        <div class="answer-content">
+                                            <h4 class="answer-title">Answer:</h4>
+                                            <p class="answer-text">{q.answer}</p>
+                                            <template if:true={q.explanation}>
+                                                <h4 class="explanation-title">Explanation:</h4>
+                                                <p class="explanation-text">{q.explanation}</p>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template if:true={q.isSubmitted}>
+                                    <div class="feedback-section">
+                                        <p class={q.feedbackClassString}>
+                                            {q.feedback}
+                                        </p>
                                     </div>
                                 </template>
                             </div>
-                            <div class="answer">
-                                <template if:true={q.reveal}>
-                                    <p><strong>Answer :</strong> {q.answer}</p>
-                                    <template if:true={q.explanation}>
-                                        <p><strong>Explanation :</strong> {q.explanation}</p>
-                                    </template>
+                        </template>
+                    </div>
+
+                    <div class="pagination-controls">
+                        <button class="pagination-btn prev" onclick={prevPage} disabled={isFirstPage}>
+                            ← Previous
+                        </button>
+
+                        <div class="pagination-info">
+                            <span class="current-page">{currentPage}</span>
+                            <span class="separator">of</span>
+                            <span class="total-pages">{totalPages}</span>
+                        </div>
+
+                        <button class="pagination-btn next" onclick={nextPage} disabled={isLastPage}>
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Admin View -->
+            <template if:true={isAdminMode}>
+                <div class="admin-view">
+                    <div class="view-header">
+                        <button class="back-btn" onclick={toggleAdminMode} aria-label="Exit Admin Mode">
+                            ← Exit Admin
+                        </button>
+                        <h2 class="view-title">Admin Panel</h2>
+                        <p class="view-subtitle">Manage questions and categories</p>
+                    </div>
+
+                    <!-- Admin Navigation -->
+                    <div class="admin-nav">
+                        <button class={adminNavBtnClass} onclick={showAdminList}>
+                            All Questions
+                        </button>
+                        <button class={adminNavBtnClassAdd} onclick={showAdminAdd}>
+                            Add Question
+                        </button>
+                    </div>
+
+                    <!-- Admin List View -->
+                    <template if:true={isAdminListView}>
+                        <div class="admin-list">
+                            <div class="admin-list-header">
+                                <h3>All Questions ({allQuestions.length})</h3>
+                            </div>
+                            <div class="admin-questions-list">
+                                <template for:each={allQuestions} for:item="q">
+                                    <div key={q.question} class="admin-question-item">
+                                        <div class="admin-question-content">
+                                            <div class="admin-question-text">{q.question}</div>
+                                            <div class="admin-question-meta">
+                                                <span class="admin-category">{q.category}</span>
+                                                <span class="admin-answer">Answer: {q.answer}</span>
+                                            </div>
+                                        </div>
+                                        <div class="admin-question-actions">
+                                            <button data-id={q.question} onclick={editQuestion} class="admin-edit-btn">Edit</button>
+                                            <button data-id={q.question} onclick={deleteQuestion} class="admin-delete-btn">Delete</button>
+                                        </div>
+                                    </div>
                                 </template>
                             </div>
-                            <button class="submit-btn" data-question={q.question} onclick={handleSubmit} disabled={q.isSubmitted}>
-                                Submit
-                            </button>
-                            <button class="toggle-answer" data-question={q.question} onclick={toggleAnswer}>
-                                {q.revealLabel}
-                            </button>
-                            <template if:true={q.isSubmitted}>
-                                <p class="feedback">{q.feedback}</p>
-                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Admin Add/Edit Form -->
+                    <template if:true={isAdminFormView}>
+                        <div class="admin-form">
+                            <h3>{adminFormTitle}</h3>
+                            <form class="question-form">
+                                <div class="form-group">
+                                    <label for="question">Question:</label>
+                                    <textarea
+                                        id="question"
+                                        data-field="question"
+                                        value={editingQuestion.question}
+                                        onchange={updateQuestionField}
+                                        placeholder="Enter the question text"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Options:</label>
+                                    <div class="options-grid">
+                                        <div class="option-input">
+                                            <label>A:</label>
+                                            <input
+                                                type="text"
+                                                data-option="A"
+                                                value={editingQuestion.options.A}
+                                                onchange={updateOption}
+                                                placeholder="Option A"
+                                            >
+                                        </div>
+                                        <div class="option-input">
+                                            <label>B:</label>
+                                            <input
+                                                type="text"
+                                                data-option="B"
+                                                value={editingQuestion.options.B}
+                                                onchange={updateOption}
+                                                placeholder="Option B"
+                                            >
+                                        </div>
+                                        <div class="option-input">
+                                            <label>C:</label>
+                                            <input
+                                                type="text"
+                                                data-option="C"
+                                                value={editingQuestion.options.C}
+                                                onchange={updateOption}
+                                                placeholder="Option C"
+                                            >
+                                        </div>
+                                        <div class="option-input">
+                                            <label>D:</label>
+                                            <input
+                                                type="text"
+                                                data-option="D"
+                                                value={editingQuestion.options.D}
+                                                onchange={updateOption}
+                                                placeholder="Option D"
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="answer">Correct Answer:</label>
+                                    <select
+                                        id="answer"
+                                        data-field="answer"
+                                        value={editingQuestion.answer}
+                                        onchange={updateQuestionField}
+                                        required
+                                    >
+                                        <option value="">Select correct answer</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="explanation">Explanation:</label>
+                                    <textarea
+                                        id="explanation"
+                                        data-field="explanation"
+                                        value={editingQuestion.explanation}
+                                        onchange={updateQuestionField}
+                                        placeholder="Optional explanation"
+                                    ></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="category">Category:</label>
+                                    <input
+                                        id="category"
+                                        type="text"
+                                        data-field="category"
+                                        value={editingQuestion.category}
+                                        onchange={updateQuestionField}
+                                        placeholder="Enter category name"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" onclick={saveQuestion} class="admin-save-btn">
+                                        {adminSaveBtnText}
+                                    </button>
+                                    <button type="button" onclick={cancelEdit} class="admin-cancel-btn">Cancel</button>
+                                </div>
+                            </form>
                         </div>
                     </template>
                 </div>
-
-                <div class="pager">
-                    <button class="pager-btn" onclick={prevPage} disabled={isFirstPage}>Previous</button>
-                    <span class="pager-info">Page {currentPage} of {totalPages}</span>
-                    <button class="pager-btn" onclick={nextPage} disabled={isLastPage}>Next</button>
-                </div>
-            </div>
+            </template>
         </template>
     </div>
 </template>

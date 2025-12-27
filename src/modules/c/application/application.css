@@ -242,6 +242,40 @@ h1 {
 .options input[type="checkbox"] {
     margin-right: 0.5rem;
 }
+
+.test-selection {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.test-selection h2 {
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+}
+
+.test-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.test-btn {
+    background-color: #0070d2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.test-btn:hover {
+    background-color: #005fb2;
+}
 :host {
     display: block;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
