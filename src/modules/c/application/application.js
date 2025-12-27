@@ -113,20 +113,42 @@ export default class Application extends LightningElement {
     }
 
     populateTests() {
-        if (!this.selectedCategory || !this.selectedCategory.questions.length) return;
+    if (!this.selectedCategory || !this.selectedCategory.questions.length) return;
 
-        const questionsPerTest = 60;
-        const numTests = Math.ceil(this.selectedCategory.questions.length / questionsPerTest);
+    const versionRegex = /^V(\d+)/;
+    const testsByVersion = this.selectedCategory.questions.reduce((acc, question) => {
+        const versionMatch = question.id.match(versionRegex);
+        if (versionMatch) {
+            const version = versionMatch[1];
+            if (!acc[version]) {
+                acc[version] = {
+                    name: `Test ${version}`,
+                    questions: [],
+                    questionCount: 0,
+                    isGroup: true
+                };
+            }
+            acc[version].questions.push(question);
+            acc[version].questionCount += 1;
+        }
+        return acc;
+    }, {});
 
-        this.tests = [];
-        for (let i = 0; i < numTests; i++) {
-            const start = i * questionsPerTest;
-            const end = Math.min(start + questionsPerTest, this.selectedCategory.questions.length);
-            this.tests.push({
-                name: `Test ${i + 1}`,
-                questions: this.selectedCategory.questions.slice(start, end),
-                questionCount: end - start
-            });
+    this.tests = Object.values(testsByVersion).map((test, index) => ({
+        ...test,
+        range: `${(index - 1) * test.questionCount + 1} - ${(index) * test.questionCount}`
+    }));
+}
+
+    handleTestClick(event) {
+        const testName = event.target.dataset.test;
+        const test = this.tests.find(t => t.name === testName);
+
+        if (test) {
+            this.selectedTest = test;
+            this.currentView = 'questions';
+            this.resetPagination();
+            this.updatePagedQuestions(test.isGroup ? test.questions : [test.questions[0]]);
         }
     }
 

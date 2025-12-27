@@ -87,21 +87,20 @@
                         <h2 class="view-title">Select a Test</h2>
                         <p class="view-subtitle">Choose a test to practice with</p>
                     </div>
-
-                    <div class="test-grid">
-                        <template for:each={testsWithRanges} for:item="test">
-                            <div key={test.name} class="test-card">
-                                <div class="test-header">
-                                    <h3 class="test-name">{test.name}</h3>
-                                    <span class="test-count">{test.questionCount} questions</span>
-                                </div>
-                                <p class="test-desc">Questions {test.range}</p>
-                                <button data-test={test.name} onclick={handleTestClick} class="start-test-btn">
-                                    Start Test
-                                </button>
-                            </div>
-                        </template>
-                    </div>
+<div class="test-grid">
+    <template for:each={tests} for:item="test">
+        <div key={test.name} class="test-card">
+            <div class="test-header">
+                <h3 class="test-name">{test.name}</h3>
+                <span class="test-count">{test.questionCount} questions</span>
+            </div>
+            <p class="test-desc">Questions {test.range}</p>
+            <button data-test={test.name} onclick={handleTestClick} class="start-test-btn">
+                Start Test
+            </button>
+        </div>
+    </template>
+</div>
                 </div>
             </template>
 
