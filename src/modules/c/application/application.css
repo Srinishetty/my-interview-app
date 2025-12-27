@@ -196,6 +196,52 @@ h1 {
 .toggle-answer:hover {
     background-color: #005fb2;
 }
+
+.submit-btn {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.submit-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.feedback {
+    margin-top: 0.5rem;
+    font-weight: bold;
+}
+
+.correct {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.incorrect {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.options label {
+    display: block;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.options input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
 :host {
     display: block;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;

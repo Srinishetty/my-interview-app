@@ -1,9 +1,9 @@
 <template>
     <div class="app-container">
         <header>
-            <h1>Interview Prep</h1>
+            <h1>Practies Q&A</h1>
         </header>
-        <template if:false={showCategoryPage}>
+        <template if:true={showCategoryPage}>
             <div class="category-grid">
                 <template for:each={categories} for:item="category">
                     <div key={category.name} data-name={category.name} onclick={handleTabClick} class={category.cardClass}>
@@ -17,7 +17,7 @@
             </div>
         </template>
 
-        <template if:true={showCategoryPage}>
+        <template if:false={showCategoryPage}>
             <div class="category-page">
                 <button class="back" onclick={backToHome} aria-label="Back to categories">← Back</button>
                 <h2 class="page-title">{selectedCategory.name}</h2>
@@ -29,7 +29,10 @@
                                 <template if:true={q.optionItems}>
                                     <div class="options">
                                         <template for:each={q.optionItems} for:item="item">
-                                            <p key={item.key}>{item.key}. {item.value}</p>
+                                            <label key={item.key} class={item.class}>
+                                                <input type="checkbox" data-question={q.question} data-option={item.key} onchange={handleOptionChange} checked={item.selected} disabled={q.isSubmitted}>
+                                                {item.key}. {item.value}
+                                            </label>
                                         </template>
                                     </div>
                                 </template>
@@ -42,9 +45,15 @@
                                     </template>
                                 </template>
                             </div>
+                            <button class="submit-btn" data-question={q.question} onclick={handleSubmit} disabled={q.isSubmitted}>
+                                Submit
+                            </button>
                             <button class="toggle-answer" data-question={q.question} onclick={toggleAnswer}>
                                 {q.revealLabel}
                             </button>
+                            <template if:true={q.isSubmitted}>
+                                <p class="feedback">{q.feedback}</p>
+                            </template>
                         </div>
                     </template>
                 </div>

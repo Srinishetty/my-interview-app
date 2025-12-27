@@ -3,11 +3,12 @@ import { LightningElement } from 'lwc';
 export default class Application extends LightningElement {
     categories = [];
     selectedCategory = null;
-    showCategoryPage = false;
+    showCategoryPage = true;
     pageSize = 5;
     currentPage = 1;
     totalPages = 1;
     pagedQuestions = [];
+    revealLabel  =true;
 
     async connectedCallback() {
         try {
@@ -21,7 +22,10 @@ export default class Application extends LightningElement {
                 questions: category.questions.map((q, index) => ({
                     ...q,
                     number: index + 1,
-                    optionItems: q.options ? Object.keys(q.options).sort().map(key => ({ key, value: q.options[key] })) : null
+                    optionItems: q.options ? Object.keys(q.options).sort().map(key => ({ key, value: q.options[key], selected: false, class: '' })) : null,
+                    selectedOptions: [],
+                    isSubmitted: false,
+                    feedback: ''
                 }))
             }));
             if (this.categories.length > 0) {
@@ -36,6 +40,8 @@ export default class Application extends LightningElement {
         const el = event.currentTarget || event.target;
         const name = el.dataset && el.dataset.name ? el.dataset.name : (event.target && event.target.textContent);
         if (name) this.selectCategory(name);
+        this.showCategoryPage = false;
+
     }
 
     selectCategory(categoryName) {
@@ -76,7 +82,7 @@ export default class Application extends LightningElement {
     }
 
     backToHome() {
-        this.showCategoryPage = false;
+        this.showCategoryPage = true;
         this.selectedCategory = null;
         // reset classes
         this.categories = this.categories.map(category => ({ ...category, className: 'tab', cardClass: 'category-card' }));
@@ -94,5 +100,46 @@ export default class Application extends LightningElement {
             this.currentPage -= 1;
             this.updatePagedQuestions();
         }
+    }
+
+    handleOptionChange(event) {
+        const questionText = event.target.dataset.question;
+        const optionKey = event.target.dataset.option;
+        const isChecked = event.target.checked;
+
+        const newQuestions = this.selectedCategory.questions.map(q => {
+            if (q.question === questionText) {
+                const newSelectedOptions = isChecked
+                    ? [...q.selectedOptions, optionKey]
+                    : q.selectedOptions.filter(opt => opt !== optionKey);
+                const newOptionItems = q.optionItems.map(item => ({
+                    ...item,
+                    selected: newSelectedOptions.includes(item.key)
+                }));
+                return { ...q, selectedOptions: newSelectedOptions, optionItems: newOptionItems };
+            }
+            return q;
+        });
+        this.selectedCategory = { ...this.selectedCategory, questions: newQuestions };
+        this.updatePagedQuestions();
+    }
+
+    handleSubmit(event) {
+        const questionText = event.target.dataset.question;
+        const newQuestions = this.selectedCategory.questions.map(q => {
+            if (q.question === questionText) {
+                const correctAnswer = q.answer;
+                const isCorrect = q.selectedOptions.includes(correctAnswer);
+                const feedback = isCorrect ? 'Correct!' : 'Incorrect. The correct answer is ' + correctAnswer + '.';
+                const newOptionItems = q.optionItems.map(item => ({
+                    ...item,
+                    class: item.key === correctAnswer ? 'correct' : (q.selectedOptions.includes(item.key) && item.key !== correctAnswer ? 'incorrect' : '')
+                }));
+                return { ...q, isSubmitted: true, feedback, optionItems: newOptionItems };
+            }
+            return q;
+        });
+        this.selectedCategory = { ...this.selectedCategory, questions: newQuestions };
+        this.updatePagedQuestions();
     }
 }
