@@ -148,6 +148,29 @@ h1 {
     margin: 0 0 1rem 0;
 }
 
+.options {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.options li {
+    margin-bottom: 0.5rem;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.options li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    width: 6px;
+    height: 6px;
+    background-color: #0070d2;
+    border-radius: 50%;
+}
+
 .answer {
     margin-bottom: 1rem;
     color: #555;

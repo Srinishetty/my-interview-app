@@ -25,11 +25,21 @@
                     <template for:each={pagedQuestions} for:item="q">
                         <div key={q.question} class="card">
                             <div class="question">
-                                <p>{q.question}</p>
+                                <p><strong>Question {q.number} :</strong> {q.question}</p>
+                                <template if:true={q.optionItems}>
+                                    <div class="options">
+                                        <template for:each={q.optionItems} for:item="item">
+                                            <p key={item.key}>{item.key}. {item.value}</p>
+                                        </template>
+                                    </div>
+                                </template>
                             </div>
                             <div class="answer">
                                 <template if:true={q.reveal}>
-                                    <p>{q.answer}</p>
+                                    <p><strong>Answer :</strong> {q.answer}</p>
+                                    <template if:true={q.explanation}>
+                                        <p><strong>Explanation :</strong> {q.explanation}</p>
+                                    </template>
                                 </template>
                             </div>
                             <button class="toggle-answer" data-question={q.question} onclick={toggleAnswer}>

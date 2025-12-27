@@ -18,7 +18,11 @@ export default class Application extends LightningElement {
                 ...category,
                 className: 'tab',
                 cardClass: 'category-card',
-                questions: category.questions.map(q => ({ ...q, reveal: false, revealLabel: 'Show Answer' }))
+                questions: category.questions.map((q, index) => ({
+                    ...q,
+                    number: index + 1,
+                    optionItems: q.options ? Object.keys(q.options).sort().map(key => ({ key, value: q.options[key] })) : null
+                }))
             }));
             if (this.categories.length > 0) {
                 this.selectCategory(this.categories[0].name);
