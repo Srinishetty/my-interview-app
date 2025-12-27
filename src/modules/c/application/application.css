@@ -61,6 +61,75 @@ h1 {
     gap: 1.5rem;
 }
 
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.category-card {
+    display: flex;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    cursor: pointer;
+}
+
+.category-card .card-left {
+    width: 38%;
+    background: linear-gradient(180deg,#a6e1ff,#dfefff);
+    min-height: 120px;
+}
+
+.category-card .card-right {
+    padding: 18px 22px;
+    flex: 1;
+}
+
+.card-title {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+    color: #1b1b1b;
+}
+
+.card-desc {
+    margin: 0 0 12px 0;
+    color: #666;
+}
+
+.card-footer {
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.start {
+    background: #f0f4f7;
+    border: 1px solid #e0e6ea;
+    padding: 6px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.meta { color: #9aa4ad; font-size: 0.9rem }
+
+.category-page .back {
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    color: #0070d2;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.category-page .page-title { margin: 6px 0 18px 0 }
+
+.pager { display:flex; align-items:center; gap:12px; justify-content:center; margin-top:18px }
+.pager-btn { padding:8px 12px; border-radius:6px; border:1px solid #d1d7dc; background:#fff; cursor:pointer }
+.pager-info { color:#666 }
+
 .card {
     background-color: #fff;
     border-radius: 8px;

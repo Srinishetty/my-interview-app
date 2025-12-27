@@ -44,6 +44,29 @@
           "reveal": false
         }
       ]
+    },
+    {
+      "name": "Agentforce",
+      "questions": [
+        {
+          "question": "How should an organization use the Einstein Trust layer to audit, track, and view masked data?  A. Utilize the audit trail that captures and stores all LLM submitted prompts in Data Cloud.  B. In Setup, use Prompt Builder to send a prompt to the LLM requesting for the masked data.  C. Access the audit trail in Setup and export all user-generated prompts.",
+          "answer": "A",
+          "explanation": "The Einstein Trust Layer is designed to ensure transparency, compliance, and security for organizations leveraging Salesforce??s AI and generative AI capabilities. Specifically, for auditing, tracking, and viewing masked data, organizations can utilize: \r\n? Audit Trail in Data Cloud: The audit trail captures and stores all prompts submitted \r\nto large language models (LLMs), ensuring that sensitive or masked data interactions are logged. This allows organizations to monitor and audit all AI- generated outputs, ensuring that data handling complies with internal and regulatory guidelines. The Data Cloud provides the infrastructure for managing and accessing this audit data. \r\n? Why not B? Using Prompt Builder in Setup to send prompts to the LLM is for \r\ncreating and managing prompts, not for auditing or tracking data. It does not interact directly with the audit trail functionality. ? Why not C? Although the audit trail can be accessed in Setup, the user-generated \r\nprompts are primarily tracked in the Data Cloud for broader control, auditing, and analysis. Setup is not the primary tool for exporting or managing these audit logs. More information on auditing AI interactions can be found in the Salesforce AI Trust Layer documentation, which outlines how organizations can manage and track generative AI interactions securely.",
+          "reveal": false
+        },
+        {
+          "question": "Universal Containers is using Agentforce for Sales to find similar opportunities to help close deals faster. The team wants to understand the criteria used by the Agent to match opportunities. What is one criterion that Agentforce for Sales uses to match similar opportunities?  A. Matched opportunities have a status of Closed Won from the last 12 months.  B. Matched opportunities are limited to the same account.  C. Matched opportunities were created in the last 12 months.",
+          "answer": "A",
+          "explanation": "Comprehensive and Detailed In-Depth Explanation:UC uses Agentforce for Sales to identify similar opportunities, aiding deal closure. Let??s determine a criterion used by the \"Find Similar Opportunities\" feature. \r\n? Option A: Matched opportunities have a status of Closed Won from the last 12 months.Agentforce for Sales analyzes historical data to find similar opportunities, prioritizing \"Closed Won\" deals as successful examples. Documentation specifies a 12-month lookback period for relevance, ensuring recent, applicable matches. This is a key criterion, making it the correct answer. \r\n? Option B: Matched opportunities are limited to the same account.While account context may factor in, Agentforce doesn??t restrict matches to the same account—it considers broader patterns across opportunities (e.g., industry, deal size). This is too narrow and incorrect. \r\n? Option C: Matched opportunities were created in the last 12 months.Creation date isn??t a primary criterion—status (e.g., Closed Won) and recency of closure matter more. This doesn??t align with documented behavior, making it incorrect. \r\nWhy Option A is Correct:\"Closed Won\" status within 12 months is a documented criterion for Agentforce??s similarity matching, providing actionable insights for deal closure. \r\nReferences: \r\n? Salesforce Agentforce Documentation: Agentforce for Sales > Find Similar Opportunities – Specifies Closed Won, 12-month criterion. ? Trailhead: Explore Agentforce Sales Agents – Details opportunity matching logic. \r\n? Salesforce Help: Sales Features in Agentforce – Confirms historical success focus.",
+          "reveal": false
+        },
+        {
+          "question": "Universal Containers (UC) wants to improve the efficiency of addressing customer questions and reduce agent handling time with AI- generated responses. The agents should be able to leverage their existing  knowledge base and identify whether the responses are coming from the large language model (LLM) or from Salesforce Knowledge. Which step should UC take to meet this requirement?  A. Turn on Service AI Grounding, Grounding with Case, and Service Replies.  B. Turn on Service Replies, Service AI Grounding, and Grounding with Knowledge.  C. Turn on Service AI Grounding and Grounding with Knowledge.",
+          "answer": "C",
+          "explanation": "To meet Universal Containers' goal of improving efficiency and reducing agent handling time with AI-generated responses, the best approach is to enable Service Replies, Service AI Grounding, and Grounding with Knowledge. \r\n? Service Replies generates responses automatically. \r\n? Service AI Grounding ensures that the AI is using relevant case data. \r\n? Grounding with Knowledge ensures that responses are backed by Salesforce Knowledge articles, allowing agents to identify whether a response is coming from the LLM or Salesforce Knowledge. \r\n? Option C does not include Service Replies, which is necessary for generating AI responses. \r\n? Option A lacks the Grounding with Knowledge, which is essential for identifying response sources. \r\nFor more details, refer to Salesforce Service AI documentation on grounding and service replies.",
+          "reveal": false
+        }
+      ]
     }
   ]
 }

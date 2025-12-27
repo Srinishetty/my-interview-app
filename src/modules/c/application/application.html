@@ -3,31 +3,69 @@
         <header>
             <h1>Interview Prep</h1>
         </header>
+        <template if:false={showCategoryPage}>
+            <div class="category-grid">
                 <template for:each={categories} for:item="category">
-                    <button key={category.name} class={category.className} onclick={handleTabClick}>{category.name}</button>
-                </template>
-            </div>
-            <div class="content">
-                <template if:true={selectedCategory}>
-                    <div class="question-list">
-                        <template for:each={selectedCategory.questions} for:item="q">
-                            <div key={q.question} class="card">
-                                <div class="question">
-                                    <p>{q.question}</p>
-                                </div>
-                                <div class="answer">
-                                    <template if:true={q.reveal}>
-                                        <p>{q.answer}</p>
-                                    </template>
-                                </div>
-                                <button class="toggle-answer" data-question={q.question} onclick={toggleAnswer}>
-                                    {q.revealLabel}
-                                </button>
-                            </div>
-                        </template>
+                    <div key={category.name} data-name={category.name} onclick={handleTabClick} class={category.cardClass}>
+                        <div class="card-left" aria-hidden="true"></div>
+                        <div class="card-right">
+                            <h2 class="card-title">{category.name}</h2>
+                            <p class="card-desc">Practice questions and flashcards for {category.name}.</p>
+                        </div>
                     </div>
                 </template>
             </div>
-        </main>
+        </template>
+
+        <template if:true={showCategoryPage}>
+            <div class="category-page">
+                <button class="back" onclick={backToHome} aria-label="Back to categories">← Back</button>
+                <h2 class="page-title">{selectedCategory.name}</h2>
+                <div class="question-list">
+                    <template for:each={pagedQuestions} for:item="q">
+                        <div key={q.question} class="card">
+                            <div class="question">
+                                <p>{q.question}</p>
+                            </div>
+                            <div class="answer">
+                                <template if:true={q.reveal}>
+                                    <p>{q.answer}</p>
+                                </template>
+                            </div>
+                            <button class="toggle-answer" data-question={q.question} onclick={toggleAnswer}>
+                                {q.revealLabel}
+                            </button>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="pager">
+                    <button class="pager-btn" onclick={prevPage} disabled={isFirstPage}>Previous</button>
+                    <span class="pager-info">Page {currentPage} of {totalPages}</span>
+                    <button class="pager-btn" onclick={nextPage} disabled={isLastPage}>Next</button>
+                </div>
+            </div>
+        </template>
+    </div>
+    <div class="content">
+        <template if:true={selectedCategory}>
+            <div class="question-list">
+                <template for:each={selectedCategory.questions} for:item="q">
+                    <div key={q.question} class="card">
+                        <div class="question">
+                            <p>{q.question}</p>
+                        </div>
+                        <div class="answer">
+                            <template if:true={q.reveal}>
+                                <p>{q.answer}</p>
+                            </template>
+                        </div>
+                        <button class="toggle-answer" data-question={q.question} onclick={toggleAnswer}>
+                            {q.revealLabel}
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </template>
     </div>
 </template>
