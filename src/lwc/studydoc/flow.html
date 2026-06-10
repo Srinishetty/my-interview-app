@@ -1,0 +1,583 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Salesforce Flow - Salesforce Study Guide</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body data-page="flow">
+    <div class="mobile-top-bar"></div>
+    <div class="progress" id="progress"></div>
+    <div class="slide-num" id="slideNum"></div>
+    <div class="keys-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or swipe on mobile</div>
+
+    <!-- Home button -->
+    <a href="index.html" class="home-btn" title="Back to Topics">&#x1F3E0;</a>
+
+    <!-- Toolbar -->
+    <div class="toolbar" style="left: 70px;">
+        <button onclick="changeFontSize(-1)" title="Decrease font" aria-label="Decrease font">A-</button>
+        <button onclick="changeFontSize(1)" title="Increase font" aria-label="Increase font">A+</button>
+        <span class="sep"></span>
+        <button onclick="toggleTheme()" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">&#x2600;&#xFE0F;</button>
+    </div>
+
+    <div class="deck" id="deck">
+        <!-- SECTION 9: SALESFORCE FLOW -->
+        <!-- ================================================== -->
+
+        <!-- FLOW SLIDE 1: Introduction -->
+        <div class="slide" data-section="flow">
+            <div class="center">
+                <h1 class="fade-in">Salesforce Flow</h1>
+                <p class="fade-in delay-1" style="font-size: 1.4em; color: #8b949e; margin: 20px 0;">Declarative Automation — No Code Required</p>
+                <div class="fade-in delay-2" style="margin-top: 30px;">
+                    <span class="badge" onclick="window.SlideEngine.goToSlide(3)" style="cursor:pointer;">Screen Flows</span>
+                    <span class="badge blue" onclick="window.SlideEngine.goToSlide(4)" style="cursor:pointer;">Record-Triggered</span>
+                    <span class="badge purple" onclick="window.SlideEngine.goToSlide(6)" style="cursor:pointer;">Subflows</span>
+                    <span class="badge orange" onclick="window.SlideEngine.goToSlide(2)" style="cursor:pointer;">Decision Elements</span>
+                    <span class="badge red" onclick="window.SlideEngine.goToSlide(5)" style="cursor:pointer;">Error Handling</span>
+                </div>
+                <p class="fade-in delay-3" style="margin-top: 40px; color: #484f58;">The primary automation tool — Salesforce recommends Flow over Process Builder & Workflow Rules</p>
+            </div>
+        </div>
+
+        <!-- FLOW SLIDE 2: Types of Flow -->
+        <div class="slide" data-section="flow">
+            <h2>Types of Flow — When to Use Each</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Salesforce offers different flow types for different automation needs. Choose based on whether you need UI interaction or background processing.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Flow Types</h3>
+                        <table>
+                            <tr><th>Type</th><th>Use Case</th><th>Has UI?</th></tr>
+                            <tr><td><strong>Screen Flow</strong></td><td>Guided wizards, forms, user input</td><td>✅ Yes</td></tr>
+                            <tr><td><strong>Record-Triggered</strong></td><td>Auto-run on create/update/delete</td><td>❌ No</td></tr>
+                            <tr><td><strong>Schedule-Triggered</strong></td><td>Run at specific times on batches</td><td>❌ No</td></tr>
+                            <tr><td><strong>Platform Event-Triggered</strong></td><td>React to platform events</td><td>❌ No</td></tr>
+                            <tr><td><strong>Autolaunched</strong></td><td>Called from other flows/Apex/buttons</td><td>❌ No</td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Record-Triggered Flow — Timing Options</h3>
+                        <table>
+                            <tr><th>When</th><th>Description</th><th>Like in Apex...</th></tr>
+                            <tr><td><strong>Before Save</strong></td><td>Modify THIS record (no DML cost)</td><td>before trigger</td></tr>
+                            <tr><td><strong>After Save</strong></td><td>Update OTHER records, send emails</td><td>after trigger</td></tr>
+                            <tr><td><strong>Async (After Save)</strong></td><td>Heavy processing, callouts</td><td>@future / Queueable</td></tr>
+                        </table>
+                        <p style="margin-top:8px;"><small><strong>Before Save</strong> is the most efficient — changes happen on the same record with zero additional DML statements.</small></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>When to Use Flow vs Apex</h3>
+                        <table>
+                            <tr><th>Scenario</th><th>Use</th></tr>
+                            <tr><td>Simple field update on same record</td><td><span class="badge">Flow</span></td></tr>
+                            <tr><td>Send email on status change</td><td><span class="badge">Flow</span></td></tr>
+                            <tr><td>Create child records automatically</td><td><span class="badge">Flow</span></td></tr>
+                            <tr><td>Guided user wizard with screens</td><td><span class="badge">Flow</span></td></tr>
+                            <tr><td>Complex validation across objects</td><td><span class="badge purple">Apex</span></td></tr>
+                            <tr><td>Integration callouts with retry</td><td><span class="badge purple">Apex</span></td></tr>
+                            <tr><td>Process 50K+ records in batch</td><td><span class="badge purple">Apex</span></td></tr>
+                            <tr><td>Complex data transformations</td><td><span class="badge purple">Apex</span></td></tr>
+                        </table>
+                        <p style="margin-top:8px;"><small><strong>Rule of thumb:</strong> If an admin can maintain it → Flow. If it needs a developer → Apex.</small></p>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Flow Replaces (Retired Tools)</h3>
+                        <ul>
+                            <li><s>Workflow Rules</s> → Record-Triggered Flow</li>
+                            <li><s>Process Builder</s> → Record-Triggered Flow</li>
+                            <li><s>Visual Workflow</s> → Screen Flow</li>
+                            <li><s>Flow Builder (old)</s> → Flow Builder (unified)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOW SLIDE 3: Flow Elements -->
+        <div class="slide" data-section="flow">
+            <h2>Flow Elements — Building Blocks</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">A Flow is built by dragging elements onto a canvas and connecting them. Each element performs one action.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Logic Elements</h3>
+                        <table>
+                            <tr><th>Element</th><th>Purpose</th></tr>
+                            <tr><td><strong>Assignment</strong></td><td>Set variable values</td></tr>
+                            <tr><td><strong>Decision</strong></td><td>If/else branching</td></tr>
+                            <tr><td><strong>Loop</strong></td><td>Iterate over a collection</td></tr>
+                            <tr><td><strong>Collection Sort</strong></td><td>Sort records in a collection</td></tr>
+                            <tr><td><strong>Collection Filter</strong></td><td>Filter records by criteria</td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Data Elements</h3>
+                        <table>
+                            <tr><th>Element</th><th>Purpose</th><th>Like in Apex...</th></tr>
+                            <tr><td><strong>Get Records</strong></td><td>Query records (SOQL)</td><td><code>[SELECT...]</code></td></tr>
+                            <tr><td><strong>Create Records</strong></td><td>Insert new records</td><td><code>insert</code></td></tr>
+                            <tr><td><strong>Update Records</strong></td><td>Modify existing records</td><td><code>update</code></td></tr>
+                            <tr><td><strong>Delete Records</strong></td><td>Remove records</td><td><code>delete</code></td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Interaction Elements (Screen Flow Only)</h3>
+                        <table>
+                            <tr><th>Element</th><th>Purpose</th></tr>
+                            <tr><td><strong>Screen</strong></td><td>Show UI to user (forms, text, choices)</td></tr>
+                            <tr><td><strong>Action</strong></td><td>Call Apex, send email, post to Chatter</td></tr>
+                            <tr><td><strong>Subflow</strong></td><td>Call another flow (reusability)</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>Variables & Resources</h3>
+<pre><code>// Flow Variables (comparable to Apex variables)
+Text Variable     → String name = '';
+Number Variable   → Decimal amount = 0;
+Boolean Variable  → Boolean isActive = false;
+Date Variable     → Date dueDate;
+Record Variable   → Account acc; (single record)
+Record Collection → List&lt;Account&gt; accounts;
+
+// Special Resources (auto-available)
+$Record       → The triggering record (Record-Triggered)
+$Record__Prior → Previous values (before update)
+$Flow.CurrentDate → Today's date
+$Flow.CurrentDateTime → Now
+$GlobalConstant.True / False / EmptyString
+$User.Id       → Running user's ID
+$Api.Session_ID → Session ID (for callouts)
+
+// Formulas (reusable calculated values)
+Formula: TODAY() + 30   → Due date formula
+Formula: {!Amount} * 0.1 → 10% of amount
+Formula: IF({!Status} = 'Closed', true, false)</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Flow vs Apex Comparison</h3>
+<pre><code>// Apex equivalent of a Record-Triggered Flow:
+// "When Account is created, set Rating based on Revenue"
+
+// FLOW (declarative):
+// Trigger: Account | After Create
+// Decision: Revenue > 1M? 
+//   Yes → Assignment: Rating = 'Hot'
+//   No → Assignment: Rating = 'Warm'
+
+// APEX (code):
+trigger AccountTrigger on Account (before insert) {
+    for (Account acc : Trigger.new) {
+        if (acc.AnnualRevenue > 1000000) {
+            acc.Rating = 'Hot';
+        } else {
+            acc.Rating = 'Warm';
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOW SLIDE 4: Screen Flow Deep Dive -->
+        <div class="slide" data-section="flow">
+            <h2>Screen Flows — Building User Interfaces</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Screen Flows let admins build guided wizards, input forms, and multi-step processes without code. They can be placed on record pages, home pages, Experience Cloud, and more.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Screen Components (Input)</h3>
+                        <table>
+                            <tr><th>Component</th><th>Use For</th></tr>
+                            <tr><td>Text Input</td><td>Single/multi-line text entry</td></tr>
+                            <tr><td>Number Input</td><td>Numeric values with validation</td></tr>
+                            <tr><td>Date/DateTime</td><td>Date picker with calendar</td></tr>
+                            <tr><td>Picklist / Radio</td><td>Single selection from list</td></tr>
+                            <tr><td>Multi-Select Checkbox</td><td>Multiple selections</td></tr>
+                            <tr><td>Lookup</td><td>Search and select a record</td></tr>
+                            <tr><td>File Upload</td><td>Attach files to records</td></tr>
+                            <tr><td>Address</td><td>Structured address input</td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Screen Components (Display)</h3>
+                        <table>
+                            <tr><th>Component</th><th>Use For</th></tr>
+                            <tr><td>Display Text</td><td>Rich text, merge fields, links</td></tr>
+                            <tr><td>Display Image</td><td>Show images from URLs</td></tr>
+                            <tr><td>Data Table</td><td>Show records in a table (selectable)</td></tr>
+                            <tr><td>Section</td><td>Group fields in columns</td></tr>
+                            <tr><td>Custom LWC</td><td>Embed Lightning Web Components!</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>Example: Case Creation Wizard</h3>
+<pre><code>// Flow Structure:
+// Screen 1: "Select Account"
+//   → Lookup component (Account)
+//   → Store in {!selectedAccount}
+
+// Screen 2: "Case Details" 
+//   → Subject (Text Input, required)
+//   → Description (Long Text Area)
+//   → Priority (Picklist: Low/Medium/High)
+//   → Due Date (Date, default: TODAY + 7)
+
+// Decision: "Is High Priority?"
+//   → Yes: Assign to Manager queue
+//   → No: Assign to General queue
+
+// Create Records: New Case
+//   → AccountId = {!selectedAccount.Id}
+//   → Subject = {!subject}
+//   → Priority = {!priority}
+//   → OwnerId = {!assignedQueue}
+
+// Screen 3: "Confirmation"
+//   → Display Text: "Case {!newCase.CaseNumber} created!"
+//   → Navigation: Go to new Case record</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Where to Place Screen Flows</h3>
+                        <ul>
+                            <li><strong>Record Page</strong> — Embed in Lightning App Builder</li>
+                            <li><strong>Home Page</strong> — Dashboard widget</li>
+                            <li><strong>Quick Action</strong> — Button on record page</li>
+                            <li><strong>Utility Bar</strong> — Always-available footer</li>
+                            <li><strong>Experience Cloud</strong> — Customer-facing portals</li>
+                            <li><strong>Custom Tab</strong> — Full-page flow</li>
+                            <li><strong>Flow URL</strong> — Direct link: <code>/flow/MyFlowName</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOW SLIDE 5: Record-Triggered Flow Patterns -->
+        <div class="slide" data-section="flow">
+            <h2>Record-Triggered Flow — Common Patterns</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Record-Triggered Flows replace Process Builder and Workflow Rules. They fire automatically when records are created, updated, or deleted.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Pattern 1: Field Update (Before Save)</h3>
+<pre><code>// Scenario: Auto-set Priority based on Amount
+// Trigger: Opportunity | Before Save | Create & Update
+// Entry Conditions: Amount is changed
+
+// Decision: "Check Amount Range"
+//   Outcome 1: Amount > 100000
+//     → Assignment: $Record.Priority__c = 'High'
+//   Outcome 2: Amount > 50000
+//     → Assignment: $Record.Priority__c = 'Medium'
+//   Default:
+//     → Assignment: $Record.Priority__c = 'Low'
+
+// ✅ No DML needed! Before-save modifies $Record directly
+// ✅ Most efficient — zero additional queries/DML</code></pre>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Pattern 2: Create Related Records (After Save)</h3>
+<pre><code>// Scenario: Create a Task when Opp Stage = 'Proposal'
+// Trigger: Opportunity | After Save | Update only
+// Entry: Stage is changed AND Stage = 'Proposal'
+
+// Create Records:
+//   Object: Task
+//   Fields:
+//     WhatId = {!$Record.Id}
+//     Subject = 'Send Proposal to ' + {!$Record.Name}
+//     OwnerId = {!$Record.OwnerId}
+//     ActivityDate = {!$Flow.CurrentDate} + 3
+//     Priority = 'High'
+
+// ✅ Runs after commit — record has ID
+// ✅ Can create/update OTHER objects</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Pattern 3: Roll-Up Summary (After Save)</h3>
+<pre><code>// Scenario: Count open Cases on Account
+// Trigger: Case | After Save | Create, Update, Delete
+
+// Get Records: Query all open Cases for this Account
+//   Object: Case
+//   Conditions: AccountId = {!$Record.AccountId}
+//               AND IsClosed = false
+//   Store: {!openCases} (collection)
+
+// Assignment:
+//   {!caseCount} = {!openCases}.size()  (formula)
+
+// Update Records:
+//   Record: Account where Id = {!$Record.AccountId}
+//   Field: Open_Cases__c = {!caseCount}
+
+// ⚠️ Watch for recursion! Enable "Run once per record"</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Pattern 4: Send Notification (After Save, Async)</h3>
+<pre><code>// Scenario: Email manager when deal > $500K closes
+// Trigger: Opportunity | After Save (Async) | Update
+// Entry: StageName is changed to 'Closed Won'
+//        AND Amount > 500000
+
+// Get Records: Get Owner's Manager
+//   Object: User
+//   Conditions: Id = {!$Record.OwnerId}
+//   Store: {!ownerUser}
+
+// Action: Send Email
+//   To: {!ownerUser.ManagerId}
+//   Subject: 'Big Deal Closed: ' + {!$Record.Name}
+//   Body: Template with merge fields
+
+// ✅ Async = won't slow down the save
+// ✅ Good for: emails, callouts, heavy processing</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOW SLIDE 6: Flow Best Practices -->
+        <div class="slide" data-section="flow">
+            <h2>Flow Best Practices & Performance</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Flows can hit governor limits just like Apex. Bulkification matters here too.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Performance Rules</h3>
+                        <ul>
+                            <li><strong>No DML/SOQL inside loops!</strong> — Same rule as Apex. Put Get/Create/Update OUTSIDE the loop element.</li>
+                            <li><strong>Use Before Save</strong> when modifying the same record — costs zero DML.</li>
+                            <li><strong>One flow per object per timing</strong> — don't create 5 separate after-save flows on Account.</li>
+                            <li><strong>Use Entry Conditions</strong> — only run when relevant fields change (isChanged formula).</li>
+                            <li><strong>Bulkify manually</strong> — collect records in a loop into a collection variable, then do ONE Create/Update after the loop.</li>
+                        </ul>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Bulkification Example</h3>
+<pre><code>// ❌ BAD: DML inside loop
+// Loop over Contacts:
+//   → Create Record (Task) ← INSIDE LOOP!
+// Result: 200 records = 200 DML = LIMIT HIT
+
+// ✅ GOOD: Collect + batch DML
+// Create variable: {!tasksToCreate} (Record Collection)
+// Loop over Contacts:
+//   → Assignment: Add new Task to {!tasksToCreate}
+// AFTER loop:
+//   → Create Records: {!tasksToCreate}  ← ONE DML!
+
+// Same pattern for Updates:
+// Loop → Assignment (add to collection) → Update AFTER loop</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>Error Handling in Flows</h3>
+<pre><code>// Fault Paths — handle errors gracefully
+// Every DML element can have a "Fault" connector
+
+// Pattern: Try/Catch equivalent in Flow
+// 1. Create Records → connects to:
+//    Success path → Continue
+//    Fault path → Screen: "Error occurred: {!$Flow.FaultMessage}"
+
+// Custom Error Messages (Record-Triggered):
+// Use "Custom Error for Display" element
+// → Shows inline error on the record page
+// → Prevents the save (like addError() in Apex)
+
+// Flow-Level Fault (catch-all):
+// Setup → Flow Settings → "What happens on error?"
+//   → Send email to admin
+//   → Log to custom object
+//   → Show generic error screen (Screen Flows)</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Debugging Flows</h3>
+                        <ul>
+                            <li><strong>Debug Mode</strong> — Run in Flow Builder with test inputs, see each step's result</li>
+                            <li><strong>Flow Debug Logs</strong> — Setup → Debug Logs → shows FLOW_START_INTERVIEW</li>
+                            <li><strong>Fault Email</strong> — Auto-sent to admin with full error details</li>
+                            <li><strong>$Flow.FaultMessage</strong> — Access error text in fault paths</li>
+                            <li><strong>Pause Element</strong> — Pause and resume (scheduled actions, wait for conditions)</li>
+                        </ul>
+                    </div>
+                    <div class="card fade-in delay-3">
+                        <h3>Order of Execution (Where Flows Run)</h3>
+                        <table>
+                            <tr><th>Step</th><th>What Happens</th></tr>
+                            <tr><td>1</td><td>System validation (required fields, field types)</td></tr>
+                            <tr><td>2</td><td><strong>Before-Save Flow</strong></td></tr>
+                            <tr><td>3</td><td>Before Triggers (Apex)</td></tr>
+                            <tr><td>4</td><td>Custom validation rules</td></tr>
+                            <tr><td>5</td><td>Duplicate rules</td></tr>
+                            <tr><td>6</td><td>Record saved to database</td></tr>
+                            <tr><td>7</td><td>After Triggers (Apex)</td></tr>
+                            <tr><td>8</td><td><strong>After-Save Flow</strong></td></tr>
+                            <tr><td>9</td><td>Assignment/escalation rules</td></tr>
+                            <tr><td>10</td><td>Email sends committed</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOW SLIDE 7: Advanced Flow Features -->
+        <div class="slide" data-section="flow">
+            <h2>Advanced Flow Features</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Power features for complex automation: subflows for reusability, custom Apex actions, and orchestration.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Subflows — Reusable Flow Components</h3>
+<pre><code>// Create a reusable flow, call it from multiple places
+
+// "Send Notification" Subflow:
+//   Input: recipientId (Text), message (Text), type (Text)
+//   Logic: Decide channel (email/Chatter/custom notif)
+//   Send the notification
+
+// Parent Flow calls it:
+// → Subflow element: "Send Notification"
+//     recipientId = {!$Record.OwnerId}
+//     message = 'Your case was updated'
+//     type = 'Email'
+
+// Benefits:
+// ✅ DRY — Don't Repeat Yourself
+// ✅ One place to update notification logic
+// ✅ Can pass variables in and get outputs back
+// ✅ Version control — update subflow, all parents benefit</code></pre>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Invoke Apex from Flow (Action)</h3>
+<pre><code>// Create an Invocable Apex method:
+public class FlowActions {
+    
+    @InvocableMethod(
+        label='Calculate Discount'
+        description='Returns discount % based on rules'
+    )
+    public static List&lt;Decimal&gt; calculateDiscount(
+        List&lt;DiscountRequest&gt; requests
+    ) {
+        List&lt;Decimal&gt; results = new List&lt;Decimal&gt;();
+        for (DiscountRequest req : requests) {
+            if (req.customerTier == 'Platinum') {
+                results.add(20.0);
+            } else if (req.totalAmount > 10000) {
+                results.add(10.0);
+            } else {
+                results.add(5.0);
+            }
+        }
+        return results;
+    }
+    
+    public class DiscountRequest {
+        @InvocableVariable(required=true)
+        public String customerTier;
+        @InvocableVariable
+        public Decimal totalAmount;
+    }
+}
+
+// In Flow: Action element → "Calculate Discount"
+// Inputs auto-map from flow variables!</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Flow + LWC Integration</h3>
+<pre><code>// Embed a Flow in LWC:
+&lt;template&gt;
+    &lt;lightning-flow 
+        flow-api-name="Create_Case_Wizard"
+        flow-input-variables={inputVars}
+        onstatuschange={handleFlowStatus}&gt;
+    &lt;/lightning-flow&gt;
+&lt;/template&gt;
+
+// JS:
+get inputVars() {
+    return [
+        { name: 'recordId', type: 'String', value: this.recordId },
+        { name: 'accountName', type: 'String', value: this.accName }
+    ];
+}
+
+handleFlowStatus(event) {
+    if (event.detail.status === 'FINISHED') {
+        // Flow completed — get output variables
+        const outputVars = event.detail.outputVariables;
+        const caseId = outputVars.find(v => v.name === 'newCaseId');
+        this.navigateToRecord(caseId.value);
+    }
+}
+
+// Custom LWC in Screen Flow (reverse):
+// Set target: lightning__FlowScreen in meta.xml
+// Use @api properties for flow input/output
+// Dispatch FlowAttributeChangeEvent for outputs</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Flow Orchestrator (Advanced)</h3>
+                        <ul>
+                            <li><strong>Multi-step approvals</strong> — sequential & parallel steps</li>
+                            <li><strong>Assigned to users/queues</strong> — each step has an assignee</li>
+                            <li><strong>Background + Interactive steps</strong> — mix of auto and manual</li>
+                            <li><strong>Stage tracking</strong> — visual progress indicator</li>
+                        </ul>
+                        <p style="margin-top:10px; color:#8b949e;"><small><strong>Use when:</strong> Complex business processes spanning multiple users/days (e.g., employee onboarding, loan approval, contract review).</small></p>
+                    </div>
+                    <div class="card fade-in delay-3">
+                        <h3>Flow Interview Answers</h3>
+                        <table>
+                            <tr><th>Question</th><th>Answer</th></tr>
+                            <tr><td>Can Flow call Apex?</td><td>✅ Yes — @InvocableMethod</td></tr>
+                            <tr><td>Can Apex call Flow?</td><td>✅ Yes — Flow.Interview</td></tr>
+                            <tr><td>Can Flow make HTTP callouts?</td><td>✅ Yes — External Service or Apex Action</td></tr>
+                            <tr><td>Can Flow handle bulk?</td><td>✅ Yes — auto-bulkified by platform</td></tr>
+                            <tr><td>Max interviews per transaction?</td><td>2,000 (per flow type)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================================================== -->
+    </div> <!-- end .deck -->
+
+    <!-- Menu button + Slide Menu -->
+    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" title="Table of Contents">&#x2630;</button>
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="slide-menu" id="slideMenu">
+        <input type="text" class="slide-menu-search" id="menuSearch" placeholder="Search slides..." oninput="filterMenu(this.value)">
+        <div id="menuItems"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <button id="prevBtn" onclick="prevSlide()" aria-label="Previous">&larr; Prev</button>
+        <button id="nextBtn" onclick="nextSlide()" aria-label="Next">Next &rarr;</button>
+    </div>
+
+    <script src="slides.js"></script>
+</body>
+</html>

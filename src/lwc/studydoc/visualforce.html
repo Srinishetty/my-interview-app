@@ -1,0 +1,380 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Visualforce - Salesforce Study Guide</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body data-page="visualforce">
+    <div class="mobile-top-bar"></div>
+    <div class="progress" id="progress"></div>
+    <div class="slide-num" id="slideNum"></div>
+    <div class="keys-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or swipe on mobile</div>
+
+    <!-- Home button -->
+    <a href="index.html" class="home-btn" title="Back to Topics">&#x1F3E0;</a>
+
+    <!-- Toolbar -->
+    <div class="toolbar" style="left: 70px;">
+        <button onclick="changeFontSize(-1)" title="Decrease font" aria-label="Decrease font">A-</button>
+        <button onclick="changeFontSize(1)" title="Increase font" aria-label="Increase font">A+</button>
+        <span class="sep"></span>
+        <button onclick="toggleTheme()" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">&#x2600;&#xFE0F;</button>
+    </div>
+
+    <div class="deck" id="deck">
+        <!-- SECTION 10: VISUALFORCE -->
+        <!-- ================================================== -->
+
+        <!-- VF SLIDE 1: Introduction -->
+        <div class="slide" data-section="visualforce">
+            <div class="center">
+                <h1 class="fade-in">Visualforce</h1>
+                <p class="fade-in delay-1" style="font-size: 1.4em; color: #8b949e; margin: 20px 0;">Server-Side Rendered UI Framework</p>
+                <div class="fade-in delay-2" style="margin-top: 30px;">
+                    <span class="badge orange">Pages</span>
+                    <span class="badge blue">Controllers</span>
+                    <span class="badge purple">Components</span>
+                    <span class="badge">Standard Controllers</span>
+                    <span class="badge red">Security</span>
+                </div>
+                <p class="fade-in delay-3" style="margin-top: 40px; color: #484f58;">Legacy but still used — PDF generation, email templates, complex overrides, Experience Cloud</p>
+            </div>
+        </div>
+
+        <!-- VF SLIDE 2: Fundamentals -->
+        <div class="slide" data-section="visualforce">
+            <h2>Visualforce Fundamentals</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Visualforce is a tag-based markup language similar to HTML/JSP. Pages run on the Salesforce server and render HTML to the browser. Still relevant for PDF generation, email templates, and legacy maintenance.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Your First Visualforce Page</h3>
+<pre><code>&lt;apex:page standardController="Account"&gt;
+    &lt;apex:pageBlock title="Account Details"&gt;
+        &lt;apex:pageBlockSection columns="2"&gt;
+            &lt;apex:outputField value="{!Account.Name}"/&gt;
+            &lt;apex:outputField value="{!Account.Industry}"/&gt;
+            &lt;apex:outputField value="{!Account.Phone}"/&gt;
+            &lt;apex:outputField value="{!Account.AnnualRevenue}"/&gt;
+        &lt;/apex:pageBlockSection&gt;
+    &lt;/apex:pageBlock&gt;
+
+    &lt;!-- Related Contacts --&gt;
+    &lt;apex:pageBlock title="Contacts"&gt;
+        &lt;apex:pageBlockTable value="{!Account.Contacts}" var="c"&gt;
+            &lt;apex:column value="{!c.FirstName}"/&gt;
+            &lt;apex:column value="{!c.LastName}"/&gt;
+            &lt;apex:column value="{!c.Email}"/&gt;
+        &lt;/apex:pageBlockTable&gt;
+    &lt;/apex:pageBlock&gt;
+&lt;/apex:page&gt;</code></pre>
+                        <p style="margin-top:8px;"><small>Access at: <code>/apex/PageName?id=001XX000003ABC</code></small></p>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>VF vs LWC — When to Use VF</h3>
+                        <table>
+                            <tr><th>Use Visualforce For</th><th>Use LWC For</th></tr>
+                            <tr><td>PDF generation (renderAs="pdf")</td><td>Modern interactive UI</td></tr>
+                            <tr><td>Email templates (rich HTML)</td><td>Record pages & app builder</td></tr>
+                            <tr><td>Complex page overrides (legacy)</td><td>Mobile & tablet apps</td></tr>
+                            <tr><td>Inline editing pages</td><td>Real-time reactive UX</td></tr>
+                            <tr><td>Sites/Experience Cloud (legacy)</td><td>Modern Experience Cloud</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>Architecture</h3>
+<pre><code>// How VF works:
+// 1. Browser requests /apex/MyPage?id=001XX
+// 2. Server finds the VF page markup
+// 3. Server calls the Controller to get data
+// 4. Server renders HTML (server-side!)
+// 5. HTML sent to browser (no client JS needed)
+
+// Key difference from LWC:
+// VF = Server-rendered (like PHP/JSP)
+// LWC = Client-rendered (like React/Angular)
+
+// Expression syntax: {!expression}
+{!Account.Name}              // Field value
+{!Account.Contacts.size}     // Collection size
+{!YEAR(TODAY())}             // Formula function
+{!IF(isAdmin, 'Yes', 'No')} // Conditional
+{!URLFOR($Resource.MyZip, 'img/logo.png')} // Static resource</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Key Components Reference</h3>
+                        <table>
+                            <tr><th>Component</th><th>Purpose</th></tr>
+                            <tr><td><code>apex:page</code></td><td>Top-level container (required)</td></tr>
+                            <tr><td><code>apex:pageBlock</code></td><td>Styled section with header</td></tr>
+                            <tr><td><code>apex:form</code></td><td>HTML form for input</td></tr>
+                            <tr><td><code>apex:inputField</code></td><td>Auto-renders correct input type</td></tr>
+                            <tr><td><code>apex:outputField</code></td><td>Display field (formatted)</td></tr>
+                            <tr><td><code>apex:pageBlockTable</code></td><td>Data table with auto-columns</td></tr>
+                            <tr><td><code>apex:commandButton</code></td><td>Button that calls controller</td></tr>
+                            <tr><td><code>apex:actionFunction</code></td><td>JS-callable Apex method</td></tr>
+                            <tr><td><code>apex:repeat</code></td><td>Loop/iteration in markup</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VF SLIDE 3: Controllers -->
+        <div class="slide" data-section="visualforce">
+            <h2>Visualforce Controllers</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Controllers provide data and handle actions. Choose between Standard, Custom, and Extensions based on your needs.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Standard Controller (Zero Code)</h3>
+<pre><code>&lt;!-- Uses built-in Account controller --&gt;
+&lt;apex:page standardController="Account"&gt;
+    &lt;!-- Automatically gets record from URL ?id=xxx --&gt;
+    &lt;p&gt;{!Account.Name}&lt;/p&gt;
+    
+    &lt;!-- Built-in actions: --&gt;
+    &lt;apex:form&gt;
+        &lt;apex:commandButton action="{!save}" value="Save"/&gt;
+        &lt;apex:commandButton action="{!edit}" value="Edit"/&gt;
+        &lt;apex:commandButton action="{!delete}" value="Delete"/&gt;
+        &lt;apex:commandButton action="{!cancel}" value="Cancel"/&gt;
+    &lt;/apex:form&gt;
+&lt;/apex:page&gt;
+
+&lt;!-- Standard List Controller (for list views) --&gt;
+&lt;apex:page standardController="Account" recordSetVar="accounts"&gt;
+    &lt;apex:pageBlockTable value="{!accounts}" var="a"&gt;
+        &lt;apex:column value="{!a.Name}"/&gt;
+    &lt;/apex:pageBlockTable&gt;
+    &lt;!-- Built-in pagination: --&gt;
+    &lt;apex:commandLink action="{!next}" value="Next"/&gt;
+    &lt;apex:commandLink action="{!previous}" value="Prev"/&gt;
+&lt;/apex:page&gt;</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Custom Controller (Full Control)</h3>
+<pre><code>&lt;!-- Page references the controller --&gt;
+&lt;apex:page controller="AccountSearchController"&gt;
+    &lt;apex:form&gt;
+        &lt;apex:inputText value="{!searchTerm}"/&gt;
+        &lt;apex:commandButton value="Search" 
+                           action="{!doSearch}"
+                           reRender="results"/&gt;
+    &lt;/apex:form&gt;
+    &lt;apex:outputPanel id="results"&gt;
+        &lt;apex:pageBlockTable value="{!results}" var="a"&gt;
+            &lt;apex:column value="{!a.Name}"/&gt;
+        &lt;/apex:pageBlockTable&gt;
+    &lt;/apex:outputPanel&gt;
+&lt;/apex:page&gt;</code></pre>
+<pre><code>// Apex Controller class
+public with sharing class AccountSearchController {
+    public String searchTerm { get; set; }
+    public List&lt;Account&gt; results { get; set; }
+    
+    public AccountSearchController() {
+        results = new List&lt;Account&gt;();
+    }
+    
+    public void doSearch() {
+        String term = '%' + String.escapeSingleQuotes(searchTerm) + '%';
+        results = [SELECT Name, Industry, Phone
+                   FROM Account 
+                   WHERE Name LIKE :term
+                   LIMIT 50];
+    }
+    
+    // Page navigation
+    public PageReference goToRecord() {
+        return new PageReference('/' + selectedId);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VF SLIDE 4: Controller Extensions & Advanced -->
+        <div class="slide" data-section="visualforce">
+            <h2>Controller Extensions & Advanced Patterns</h2>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Controller Extension (Best of Both)</h3>
+<pre><code>&lt;!-- Gets standard controller + custom logic --&gt;
+&lt;apex:page standardController="Account" 
+           extensions="AccountExtension"&gt;
+    &lt;p&gt;{!Account.Name}&lt;/p&gt;
+    &lt;p&gt;Custom Data: {!relatedOpportunityCount}&lt;/p&gt;
+    &lt;apex:commandButton value="Custom Action" 
+                       action="{!doCustomAction}"/&gt;
+&lt;/apex:page&gt;</code></pre>
+<pre><code>// Extension class — augments standard controller
+public with sharing class AccountExtension {
+    private final Account acct;
+    
+    // MUST have this constructor signature
+    public AccountExtension(ApexPages.StandardController std) {
+        this.acct = (Account) std.getRecord();
+    }
+    
+    public Integer getRelatedOpportunityCount() {
+        return [SELECT COUNT() FROM Opportunity 
+                WHERE AccountId = :acct.Id];
+    }
+    
+    public PageReference doCustomAction() {
+        // Custom logic here
+        acct.Status__c = 'Reviewed';
+        update acct;
+        ApexPages.addMessage(new ApexPages.Message(
+            ApexPages.Severity.CONFIRM, 'Account reviewed!'));
+        return null; // Stay on same page
+    }
+}</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>PDF Generation (VF's Killer Feature)</h3>
+<pre><code>&lt;!-- Render entire page as PDF --&gt;
+&lt;apex:page standardController="Account" 
+           renderAs="pdf" 
+           applyBodyTag="false"&gt;
+    &lt;head&gt;
+        &lt;style&gt;
+            body { font-family: Arial, sans-serif; }
+            .header { background: #003366; color: white; 
+                      padding: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            td { border: 1px solid #ddd; padding: 8px; }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div class="header"&gt;
+            &lt;h1&gt;Invoice: {!Account.Name}&lt;/h1&gt;
+            &lt;p&gt;Date: {!TODAY()}&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;table&gt;
+            &lt;apex:repeat value="{!Account.Opportunities}" var="opp"&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;{!opp.Name}&lt;/td&gt;
+                    &lt;td&gt;{!opp.Amount}&lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/apex:repeat&gt;
+        &lt;/table&gt;
+    &lt;/body&gt;
+&lt;/apex:page&gt;
+
+// Generate PDF from Apex:
+PageReference pdf = Page.InvoicePdf;
+pdf.getParameters().put('id', accountId);
+Blob pdfBlob = pdf.getContentAsPDF();</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>VF Security Essentials</h3>
+                        <ul>
+                            <li><strong>CRUD/FLS</strong> — Standard controller respects automatically; custom controller must check manually</li>
+                            <li><strong>XSS Prevention</strong> — Use <code>{!HTMLENCODE(value)}</code> or <code>{!JSENCODE(value)}</code> for user input</li>
+                            <li><strong>CSRF</strong> — Built-in ViewState token protects forms automatically</li>
+                            <li><strong>Sharing</strong> — Custom controllers should use <code>with sharing</code></li>
+                            <li><strong>Output Encoding</strong> — <code>&lt;apex:outputText escape="true"/&gt;</code> (default)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VF SLIDE 5: Visualforce in Lightning -->
+        <div class="slide" data-section="visualforce">
+            <h2>Visualforce in Lightning Experience</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">VF pages can still run in Lightning but with limitations. Know how to embed them and when to migrate.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Embedding VF in Lightning</h3>
+<pre><code>&lt;!-- 1. VF page must opt-in to Lightning --&gt;
+&lt;apex:page lightningStylesheets="true"&gt;
+    &lt;!-- Gets SLDS styling automatically --&gt;
+&lt;/apex:page&gt;
+
+&lt;!-- 2. Place on Lightning page via App Builder --&gt;
+&lt;!-- Drag "Visualforce" component --&gt;
+&lt;!-- Select your page, set height --&gt;
+
+&lt;!-- 3. VF in Lightning Tab --&gt;
+&lt;!-- Setup → Tabs → Visualforce Tabs --&gt;
+
+&lt;!-- 4. VF as Quick Action --&gt;
+&lt;!-- Object → Buttons &amp; Actions → New Action --&gt;
+&lt;!-- Type: Visualforce, select page --&gt;
+
+&lt;!-- 5. Communication: VF → Lightning --&gt;
+&lt;script&gt;
+    // Fire Lightning event from VF
+    var lexOrigin = 'https://myDomain.lightning.force.com';
+    parent.postMessage({
+        type: 'recordUpdated',
+        recordId: '{!Account.Id}'
+    }, lexOrigin);
+&lt;/script&gt;</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>VF Limitations in Lightning</h3>
+                        <ul>
+                            <li><strong>iFrame</strong> — VF pages render inside an iframe (limited communication)</li>
+                            <li><strong>No $A</strong> — Aura framework not available in VF</li>
+                            <li><strong>JavaScript remoting</strong> — Still works but prefer LWC</li>
+                            <li><strong>ViewState limit</strong> — 170KB (watch complex pages)</li>
+                            <li><strong>No shadow DOM</strong> — CSS leaks possible</li>
+                            <li><strong>Mobile</strong> — Limited mobile support vs LWC</li>
+                        </ul>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Migration Path: VF → LWC</h3>
+                        <table>
+                            <tr><th>VF Pattern</th><th>LWC Equivalent</th></tr>
+                            <tr><td><code>apex:inputField</code></td><td><code>lightning-input-field</code></td></tr>
+                            <tr><td><code>apex:pageBlockTable</code></td><td><code>lightning-datatable</code></td></tr>
+                            <tr><td><code>apex:commandButton</code></td><td><code>lightning-button</code> + handler</td></tr>
+                            <tr><td><code>apex:actionFunction</code></td><td>imperative Apex call</td></tr>
+                            <tr><td><code>{!field}</code> merge</td><td><code>{property}</code> binding</td></tr>
+                            <tr><td><code>reRender</code></td><td>Reactive properties (automatic)</td></tr>
+                            <tr><td>ViewState</td><td>Not needed (client-side state)</td></tr>
+                            <tr><td>Controller getter</td><td>@wire / imperative Apex</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================================================== -->
+    </div> <!-- end .deck -->
+
+    <!-- Menu button + Slide Menu -->
+    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" title="Table of Contents">&#x2630;</button>
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="slide-menu" id="slideMenu">
+        <input type="text" class="slide-menu-search" id="menuSearch" placeholder="Search slides..." oninput="filterMenu(this.value)">
+        <div id="menuItems"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <button id="prevBtn" onclick="prevSlide()" aria-label="Previous">&larr; Prev</button>
+        <button id="nextBtn" onclick="nextSlide()" aria-label="Next">Next &rarr;</button>
+    </div>
+
+    <script src="slides.js"></script>
+</body>
+</html>

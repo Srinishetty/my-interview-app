@@ -1,0 +1,1044 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Senior Developer Interview - 5 Year Experience</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0d1117; --bg-card: #161b22; --border: #30363d;
+            --text: #e6edf3; --text-muted: #8b949e; --text-dim: #484f58;
+            --blue: #58a6ff; --green: #238636; --purple: #bc8cff;
+            --orange: #f0883e; --red: #da3633; --green-light: #7ee787;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; -webkit-tap-highlight-color: transparent;
+        }
+
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 20px; background: var(--bg-card);
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50;
+        }
+        .topbar a { color: var(--text-muted); text-decoration: none; font-size: 1.3em; }
+        .topbar a:hover { color: var(--blue); }
+        .topbar .title { font-weight: 600; font-size: 0.95em; }
+        .topbar .round-info { font-size: 0.8em; color: var(--text-muted); }
+
+        .container { max-width: 820px; margin: 0 auto; padding: 24px 16px 100px; }
+
+        /* Interviewer persona */
+        .interviewer {
+            display: flex; align-items: flex-start; gap: 14px;
+            margin-bottom: 20px; animation: fadeIn 0.4s ease;
+        }
+        .interviewer-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2em; flex-shrink: 0;
+        }
+        .interviewer-bubble {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 4px 16px 16px 16px; padding: 16px 20px;
+            flex: 1; position: relative;
+        }
+        .interviewer-name { font-size: 0.75em; color: var(--blue); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .interviewer-bubble p { font-size: 1.05em; line-height: 1.7; }
+        .interviewer-bubble .followup { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 0.92em; color: var(--orange); font-style: italic; }
+
+        /* Round header */
+        .round-header {
+            text-align: center; margin-bottom: 32px; padding: 20px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; animation: fadeIn 0.5s ease;
+        }
+        .round-header h2 { font-size: 1.4em; margin-bottom: 8px; color: var(--blue); }
+        .round-header p { color: var(--text-muted); font-size: 0.9em; }
+        .round-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.75em; font-weight: 600; margin-top: 10px; }
+        .round-badge.technical { background: #1f6feb22; color: var(--blue); border: 1px solid var(--blue); }
+        .round-badge.scenario { background: #8957e522; color: var(--purple); border: 1px solid var(--purple); }
+        .round-badge.system { background: #23863622; color: var(--green-light); border: 1px solid var(--green); }
+        .round-badge.behavioral { background: #d2992222; color: var(--orange); border: 1px solid var(--orange); }
+
+        /* Progress */
+        .progress-bar { width: 100%; height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); transition: width 0.4s; border-radius: 2px; }
+
+        /* Answer section */
+        .your-answer { margin: 16px 0; }
+        .your-answer textarea {
+            width: 100%; min-height: 120px; padding: 14px;
+            background: #0d1117; border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text); font-size: 0.95em;
+            font-family: inherit; resize: vertical; outline: none;
+        }
+        .your-answer textarea:focus { border-color: var(--blue); }
+        .your-answer textarea::placeholder { color: var(--text-dim); }
+        .your-answer label { font-size: 0.82em; color: var(--text-muted); margin-bottom: 6px; display: block; }
+
+        /* Buttons */
+        .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+        .btn {
+            padding: 14px 24px; border-radius: 10px; border: none;
+            font-size: 0.95em; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; flex: 1; min-width: 140px; text-align: center;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--blue); color: #fff; }
+        .btn-primary:hover { background: #79c0ff; }
+        .btn-secondary { background: #21262d; color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--blue); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Natural answer (how to actually speak it) */
+        .natural-answer {
+            margin-top: 20px; border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border); display: none; animation: slideDown 0.4s ease;
+        }
+        .natural-answer.visible { display: block; }
+        .natural-header { padding: 12px 16px; font-size: 0.82em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: #8b5cf622; color: #a78bfa; border-bottom: 1px solid #8b5cf6; }
+        .natural-body { padding: 16px 20px; background: var(--bg-card); font-size: 0.93em; line-height: 1.8; color: var(--text); }
+        .natural-body .speaker { display: block; font-weight: 600; color: #a78bfa; margin-top: 14px; margin-bottom: 4px; font-size: 0.82em; text-transform: uppercase; }
+        .natural-body .speaker:first-child { margin-top: 0; }
+        .natural-body .speech { display: block; padding: 10px 14px; background: #8b5cf60a; border-left: 3px solid #8b5cf640; border-radius: 0 8px 8px 0; margin: 6px 0 14px; font-style: italic; line-height: 1.7; }
+        .natural-body .pause { display: inline-block; color: var(--text-muted); font-size: 0.8em; margin: 0 4px; font-style: normal; }
+        .natural-body .tip { display: block; margin-top: 14px; padding: 10px 14px; background: #f0883e15; border: 1px solid #f0883e40; border-radius: 8px; font-size: 0.85em; font-style: normal; }
+        .natural-body .tip strong { color: var(--orange); }
+
+        /* Expected answer / evaluation */
+        .evaluation {
+            margin-top: 20px; border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border); display: none; animation: slideDown 0.4s ease;
+        }
+        .evaluation.visible { display: block; }
+        .eval-header { padding: 12px 16px; font-size: 0.82em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .eval-header.expected { background: #23863622; color: var(--green-light); border-bottom: 1px solid #238636; }
+        .eval-header.criteria { background: #d2992222; color: var(--orange); border-bottom: 1px solid #d29922; }
+        .eval-body { padding: 16px; background: var(--bg-card); }
+        .eval-body p { font-size: 0.93em; line-height: 1.7; margin-bottom: 8px; }
+        .eval-body ul { padding-left: 18px; margin: 8px 0; }
+        .eval-body li { font-size: 0.9em; line-height: 1.6; margin: 4px 0; }
+        .eval-body code { background: #0d1117; padding: 2px 6px; border-radius: 4px; font-size: 0.83em; color: #79c0ff; font-family: 'Cascadia Code', monospace; }
+        .eval-body pre { background: #0d1117; padding: 12px; border-radius: 8px; overflow-x: auto; margin: 10px 0; font-size: 0.8em; line-height: 1.5; border: 1px solid var(--border); }
+        .eval-body .must-mention { background: #da363315; border: 1px solid #da363350; border-radius: 8px; padding: 12px; margin-top: 12px; }
+        .eval-body .must-mention h5 { color: #ff7b72; font-size: 0.78em; text-transform: uppercase; margin-bottom: 6px; }
+        .eval-body .bonus { background: #23863615; border: 1px solid #23863650; border-radius: 8px; padding: 12px; margin-top: 10px; }
+        .eval-body .bonus h5 { color: var(--green-light); font-size: 0.78em; text-transform: uppercase; margin-bottom: 6px; }
+
+        /* Self rating */
+        .self-rate { margin-top: 16px; text-align: center; display: none; animation: fadeIn 0.3s ease; }
+        .self-rate.visible { display: block; }
+        .self-rate p { font-size: 0.88em; color: var(--text-muted); margin-bottom: 12px; }
+        .rate-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .rate-btn {
+            padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text); cursor: pointer;
+            font-size: 0.88em; font-weight: 500; transition: all 0.2s; min-width: 130px;
+        }
+        .rate-btn:hover { transform: translateY(-2px); }
+        .rate-btn:active { transform: scale(0.95); }
+        .rate-btn.strong { border-color: var(--green); color: var(--green-light); }
+        .rate-btn.strong:hover { background: #23863622; }
+        .rate-btn.okay { border-color: var(--orange); color: var(--orange); }
+        .rate-btn.okay:hover { background: #d2992222; }
+        .rate-btn.weak { border-color: var(--red); color: #ff7b72; }
+        .rate-btn.weak:hover { background: #da363322; }
+
+        /* Results */
+        .results { display: none; animation: fadeIn 0.5s ease; padding: 30px 0; }
+        .results.visible { display: block; }
+        .results h2 { text-align: center; font-size: 1.6em; margin-bottom: 24px; }
+        .verdict { text-align: center; padding: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 24px; }
+        .verdict .score-big { font-size: 3em; font-weight: 700; }
+        .verdict .verdict-text { font-size: 1.1em; margin-top: 8px; color: var(--text-muted); }
+        .round-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .round-score { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+        .round-score .rs-label { font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
+        .round-score .rs-value { font-size: 1.4em; font-weight: 700; }
+        .feedback-list { list-style: none; padding: 0; }
+        .feedback-list li { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.9em; display: flex; align-items: flex-start; gap: 10px; }
+        .feedback-list li:last-child { border-bottom: none; }
+        .retry-btn { display: block; margin: 24px auto 0; padding: 14px 32px; background: var(--blue); color: #fff; border: none; border-radius: 10px; font-size: 1em; font-weight: 600; cursor: pointer; }
+        .retry-btn:hover { background: #79c0ff; }
+
+        /* Timer */
+        .timer { position: fixed; top: 60px; right: 16px; background: var(--bg-card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.8em; color: var(--text-muted); z-index: 40; }
+        .timer.warning { color: var(--orange); border-color: var(--orange); }
+
+        /* Light theme */
+        body.light { --bg: #fff; --bg-card: #f6f8fa; --border: #d1d9e0; --text: #1f2328; --text-muted: #6e7781; --text-dim: #8c959f; --blue: #0550ae; --green: #1a7f37; --purple: #6639ba; --orange: #953800; --red: #cf222e; --green-light: #1a7f37; }
+        body.light .your-answer textarea { background: #fff; }
+        body.light .eval-body pre { background: #f6f8fa; }
+        body.light .eval-body code { background: #f6f8fa; color: #0550ae; }
+        body.light .natural-header { background: #8b5cf615; color: #6639ba; border-bottom-color: #6639ba; }
+        body.light .natural-body .speaker { color: #6639ba; }
+        body.light .natural-body .speech { background: #8b5cf608; border-left-color: #6639ba40; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 3000px; } }
+
+        @media (max-width: 600px) {
+            .container { padding: 16px 12px 80px; }
+            .interviewer-bubble { padding: 12px 14px; }
+            .interviewer-bubble p { font-size: 0.98em; }
+            .btn-row { flex-direction: column; }
+            .btn { min-width: 100%; }
+            .rate-btns { flex-direction: column; }
+            .rate-btn { width: 100%; }
+            .round-scores { grid-template-columns: 1fr 1fr; }
+            .timer { top: 56px; right: 8px; font-size: 0.72em; padding: 4px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" title="Home">&#x1F3E0;</a>
+        <span class="title">Senior Developer Interview (5 YOE)</span>
+        <span class="round-info" id="roundInfo">Round 1/4</span>
+    </div>
+
+    <div class="timer" id="timer">&#x23F1; 00:00</div>
+
+    <div class="container">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div id="content"></div>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+    // ============= INTERVIEW STRUCTURE =============
+    // Simulates a real 4-round Salesforce senior developer interview
+    
+    const rounds = [
+        {
+            name: 'Technical Deep Dive',
+            badge: 'technical',
+            description: 'Core platform knowledge, architecture decisions, and hands-on coding patterns.',
+            questions: [
+                {
+                    q: `Let's start with something fundamental. You have a trigger on Account that needs to update all related Contacts when a field changes. Walk me through how you'd architect this. What patterns would you use?`,
+                    followup: `What if this trigger processes 10,000 Accounts in a batch context? How does your design hold up?`,
+                    expected: `<p><strong>Expected architecture:</strong></p>
+<ul>
+<li><strong>Trigger Handler Pattern</strong> &mdash; Separate trigger logic from trigger file. One trigger per object, delegating to a handler class.</li>
+<li><strong>Recursion prevention</strong> &mdash; Static Set&lt;Id&gt; to track processed records, NOT a simple boolean flag (boolean fails in bulk).</li>
+<li><strong>Bulkified query</strong> &mdash; Query contacts WHERE AccountId IN :accountIds (one SOQL, not per-account).</li>
+<li><strong>Map-based processing</strong> &mdash; Map&lt;Id, Account&gt; to match contacts to their accounts efficiently.</li>
+<li><strong>Single DML</strong> &mdash; Collect all contact updates in a List, one update statement at the end.</li>
+</ul>
+<pre><code>// Trigger (thin)
+trigger AccountTrigger on Account (after update) {
+    AccountTriggerHandler.handleAfterUpdate(Trigger.newMap, Trigger.oldMap);
+}
+
+// Handler
+public class AccountTriggerHandler {
+    private static Set&lt;Id&gt; processed = new Set&lt;Id&gt;();
+    
+    public static void handleAfterUpdate(Map&lt;Id, Account&gt; newMap, Map&lt;Id, Account&gt; oldMap) {
+        List&lt;Id&gt; changedAccounts = new List&lt;Id&gt;();
+        for (Id accId : newMap.keySet()) {
+            if (processed.contains(accId)) continue;
+            if (newMap.get(accId).Status__c != oldMap.get(accId).Status__c) {
+                changedAccounts.add(accId);
+                processed.add(accId);
+            }
+        }
+        if (changedAccounts.isEmpty()) return;
+        
+        List&lt;Contact&gt; contactsToUpdate = [
+            SELECT Id, Account_Status__c FROM Contact 
+            WHERE AccountId IN :changedAccounts
+        ];
+        for (Contact c : contactsToUpdate) {
+            c.Account_Status__c = newMap.get(c.AccountId).Status__c;
+        }
+        update contactsToUpdate;
+    }
+}</code></pre>
+<p><strong>For 10K Accounts in batch:</strong> The code is already bulk-safe. One SOQL query, one DML. But if contacts per account is high (50K+ total contacts), consider processing in chunks or using Queueable chaining.</p>
+<div class="must-mention"><h5>Must mention for 5 YOE</h5><ul><li>Trigger handler pattern (not raw trigger logic)</li><li>Recursion control with Set, not boolean</li><li>Governor limit awareness (SOQL/DML not in loops)</li><li>Understanding batch context implications</li></ul></div>
+<div class="bonus"><h5>Bonus points</h5><ul><li>Mentions using SOQL for-loop if contacts might exceed 50K</li><li>Discusses trigger frameworks (fflib, or custom TriggerHandler base class)</li><li>Mentions @TestVisible for unit testing the static set</li></ul></div>`
+                    ,
+                    naturalAnswer: `<span class="speaker">You (confident, structured):</span>
+<span class="speech">"Great question. So for this scenario, I'd definitely use a Trigger Handler pattern — I never put logic directly in the trigger file itself. We keep our triggers thin, just one trigger per object delegating to a handler class."</span>
+<span class="pause">*brief pause, organizing thoughts*</span>
+<span class="speech">"For the actual implementation — first thing I'd do in the handler is check which Accounts actually had the field value change. I'd compare Trigger.newMap against Trigger.oldMap and collect only the changed IDs. No point processing records that didn't change, right?"</span>
+<span class="speech">"Then I'd query all related Contacts in ONE bulk query — <code>WHERE AccountId IN :changedAccountIds</code>. Map-based processing to match contacts back to their parent accounts. Update the field on each contact, then a single DML statement at the end."</span>
+<span class="speech">"For recursion prevention, I always use a static <code>Set&lt;Id&gt;</code> of processed record IDs — never a boolean flag, because a boolean breaks in bulk contexts. If the trigger fires again, already-processed records get skipped."</span>
+<span class="speaker">Interviewer asks about 10K accounts in batch:</span>
+<span class="speech">"Yeah, so the good news is this design is already bulk-safe. One SOQL, one DML regardless of batch size. The main concern would be if each account has hundreds of contacts — then you might hit heap size limits with a very large List. In that case, I'd use a SOQL for-loop to process contacts in chunks of 200, or if we're talking truly massive volumes, I'd consider chaining Queueables."</span>
+<span class="tip"><strong>Pro tip:</strong> Start with the pattern name ("Trigger Handler Pattern"), then walk through your thought process step by step. Mention bulkification naturally — it shows you think in production terms, not just "it works in my dev org."</span>`
+                },
+                {
+                    q: `You mentioned LWC on your resume. Explain how you'd build a complex parent-child component where the parent has a data table and clicking a row opens a modal for editing. How do you manage state?`,
+                    followup: `How do you handle the scenario where the user edits data in the modal, saves, and the table needs to refresh? What if the save partially fails?`,
+                    expected: `<p><strong>Architecture:</strong></p>
+<ul>
+<li><strong>Parent component</strong>: Holds the data (single source of truth). Passes row data to modal via @api. Listens for custom events from modal.</li>
+<li><strong>Modal component</strong>: Receives data via @api, works on a CLONE (never mutate parent's data directly). Dispatches 'save' event with changed data.</li>
+<li><strong>State management</strong>: Parent owns the canonical data array. Modal gets a deep copy. On save, parent merges changes back.</li>
+</ul>
+<pre><code>// Parent
+handleRowClick(event) {
+    this.selectedRow = JSON.parse(JSON.stringify(event.detail.row)); // Deep clone!
+    this.showModal = true;
+}
+
+handleModalSave(event) {
+    const updatedRow = event.detail;
+    // Optimistic UI: update table immediately
+    this.data = this.data.map(row => 
+        row.Id === updatedRow.Id ? updatedRow : row
+    );
+    this.showModal = false;
+    // Then persist to server
+    this.saveToServer(updatedRow);
+}
+
+async saveToServer(record) {
+    try {
+        await updateRecord({ fields: record });
+    } catch (error) {
+        // Rollback optimistic update
+        await refreshApex(this.wiredData);
+        this.showToast('Error', error.body.message, 'error');
+    }
+}</code></pre>
+<p><strong>For partial failures:</strong> Use <code>Database.update(records, false)</code> (allOrNone=false) on server, return SaveResult[] to client. Client marks failed rows with error state and only refreshes those rows.</p>
+<div class="must-mention"><h5>Must mention</h5><ul><li>Deep clone to avoid reference mutation</li><li>Custom events for child→parent communication</li><li>Single source of truth pattern</li><li>Optimistic UI with rollback strategy</li><li>refreshApex() for re-fetching wire data</li></ul></div>
+<div class="bonus"><h5>Bonus</h5><ul><li>Mentions tracking draft state per row</li><li>Error boundary (errorCallback) in parent</li><li>Accessibility: focus management when modal opens/closes</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (thinking out loud, drawing on experience):</span>
+<span class="speech">"So I've actually built this exact pattern in a recent project. The key principle I follow is single source of truth â€” the parent component owns the data. Always."</span>
+<span class="speech">"Here's how I'd structure it: the parent holds the full data array, renders the lightning-datatable or a custom table. When a user clicks a row, I capture that row's data, make a deep copy using JSON.parse(JSON.stringify()) â€” super important, you never want the modal mutating the parent's data directly â€” and pass that clone to the modal via an @api property."</span>
+<span class="pause">*gestures as if drawing a diagram*</span>
+<span class="speech">"The modal is its own child component. It receives the data, user edits it, and when they hit Save, the modal dispatches a custom event â€” something like 'recordsaved' â€” with the updated data in event.detail. The parent listens for that event, merges the changes back into its data array, and closes the modal."</span>
+<span class="speech">"For the save itself, I typically use an optimistic UI approach. Update the table immediately so the user sees instant feedback, then call the Apex method. If the server save fails, I roll back by calling refreshApex on the wired data. And I show a toast with the error message."</span>
+<span class="speaker">On partial failures:</span>
+<span class="speech">"Right, so on the Apex side, I'd use Database.update with allOrNone set to false. That gives me back SaveResult array. I send that back to the client, mark the failed rows with an error CSS class, and only refresh those specific rows. The successfully saved ones stay as-is."</span>
+<span class="tip"><strong>Pro tip:</strong> Mention "single source of truth" early â€” it instantly signals you understand component architecture. Then walk through the data flow: parent â†’ clone â†’ child â†’ event â†’ parent merge.</span>`
+                },
+                {
+                    q: `Tell me about a time you had to debug a production issue with governor limits. What was happening, how did you diagnose it, and what was the fix?`,
+                    followup: `How would you prevent similar issues from happening again? What monitoring would you put in place?`,
+                    expected: `<p><strong>Expected structured answer (STAR method):</strong></p>
+<p><strong>Situation:</strong> Production users getting "Too many SOQL queries: 101" when saving Opportunities with many line items.</p>
+<p><strong>Diagnosis approach:</strong></p>
+<ul>
+<li>Check Debug Logs &mdash; enable for affected user, reproduce the issue</li>
+<li>Look at SOQL_QUERIES_ISSUED in log header</li>
+<li>Identify the loop &mdash; trigger or process builder calling SOQL per record</li>
+<li>Check Limits.getQueries() at key points</li>
+<li>Review ALL automation on the object (triggers, flows, process builders can stack)</li>
+</ul>
+<p><strong>Common root causes for 5-year devs to know:</strong></p>
+<ul>
+<li>Trigger calling helper method with SOQL, invoked per-record in bulk</li>
+<li>Multiple automations stacking (trigger + flow + PB all querying same object)</li>
+<li>Recursive trigger re-entry</li>
+<li>@wire in LWC calling cacheable Apex that itself makes queries (N+1 on client)</li>
+</ul>
+<p><strong>Prevention:</strong></p>
+<ul>
+<li>Code reviews checking for SOQL/DML in loops</li>
+<li>Apex unit tests with 200+ records (forces bulk)</li>
+<li>Static analysis tools (PMD, Clayton)</li>
+<li>Monitoring: <code>Limits.getQueries()</code> logging, Event Monitoring (Shield)</li>
+<li>Governor limit custom alerts via Platform Events</li>
+</ul>
+<div class="must-mention"><h5>Signals of experience</h5><ul><li>Mentions debug log analysis technique</li><li>Understands automation stacking problem</li><li>Has a prevention strategy (not just reactive fixes)</li><li>Discusses team-level practices (code review, testing standards)</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (drawing from real experience):</span>
+<span class="speech">"Yeah, I've dealt with this multiple times unfortunately. Let me tell you about a specific one. We had users intermittently getting the SOQL 101 error when converting Leads â€” but only certain users and only when they converted leads with many activities."</span>
+<span class="pause">*settling into the story*</span>
+<span class="speech">"So first thing I did was enable debug logs for one of the affected users â€” set the log level to FINEST for Database. Had them reproduce the issue. When I opened the log, I went straight to the header line â€” SOQL_QUERIES_ISSUED showed 103 out of 100 limit."</span>
+<span class="speech">"I scanned the log and found the culprit: there was a trigger on Task that was querying the parent Lead inside a for-loop. The thing is, when you convert a Lead with 50+ tasks, those tasks get reparented, which fires the task trigger 50 times. Each invocation made its own SOQL query. 50 queries just from that one trigger â€” and we had other automation running too."</span>
+<span class="speech">"The fix was straightforward â€” bulkify the trigger. Collect all the parent IDs first, do one query outside the loop, put results in a Map, then iterate. Took the query count from 50+ down to 1 for that trigger."</span>
+<span class="speaker">On prevention:</span>
+<span class="speech">"After that incident, I pushed for three things on the team: First, mandatory code reviews with a specific checklist item for SOQL-in-loops. Second, all test methods must include a bulk test with 200+ records â€” that forces you to hit governor limits in testing. Third, I set up PMD in our CI pipeline with the AvoidSoqlInLoops rule. Now it literally cannot pass PR review if someone does that."</span>
+<span class="tip"><strong>Pro tip:</strong> Use the STAR format naturally â€” set the scene, explain what YOU specifically did, give the concrete result. Interviewers love hearing "I checked the debug log header" because it shows you know the tools, not just theory.</span>`
+                },
+                {
+                    q: `You need to make an HTTP callout to an external system from a trigger. Walk me through the constraints and your solution.`,
+                    followup: `What if the external system is unreliable and sometimes takes 30 seconds to respond? What if you need guaranteed delivery?`,
+                    expected: `<p><strong>Core constraints:</strong></p>
+<ul>
+<li>Cannot make callouts from trigger context directly (DML already happened)</li>
+<li>Cannot mix DML and callouts in same transaction</li>
+<li>Must use async: <code>@future(callout=true)</code> or Queueable with <code>Database.AllowsCallouts</code></li>
+</ul>
+<p><strong>Basic solution:</strong></p>
+<pre><code>// Trigger
+trigger OrderTrigger on Order__c (after insert) {
+    OrderCalloutService.sendOrdersAsync(Trigger.newMap.keySet());
+}
+
+// Service
+public class OrderCalloutService {
+    @future(callout=true)
+    public static void sendOrdersAsync(Set&lt;Id&gt; orderIds) {
+        List&lt;Order__c&gt; orders = [SELECT Id, Name, Amount__c FROM Order__c WHERE Id IN :orderIds];
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:OrderAPI/orders');
+        req.setMethod('POST');
+        req.setBody(JSON.serialize(orders));
+        req.setTimeout(120000);
+        HttpResponse res = new Http().send(req);
+        // Handle response...
+    }
+}</code></pre>
+<p><strong>For unreliable systems (30s timeout):</strong></p>
+<ul>
+<li>Use <strong>Queueable</strong> (not @future) &mdash; can chain retries</li>
+<li>Set timeout: <code>req.setTimeout(120000)</code> (max 120s)</li>
+<li>Implement retry with exponential backoff (Queueable chains)</li>
+<li>Circuit breaker: after N failures, stop trying, alert admin</li>
+</ul>
+<p><strong>For guaranteed delivery:</strong></p>
+<ul>
+<li><strong>Platform Events</strong> &mdash; publish event from trigger, subscriber makes callout. Events survive transaction rollback.</li>
+<li><strong>Outbound Message</strong> (legacy) or <strong>Change Data Capture</strong> + external subscriber</li>
+<li>Custom retry queue (custom object storing pending callouts, batch job processes them)</li>
+</ul>
+<div class="must-mention"><h5>Must mention</h5><ul><li>No callouts in trigger directly (DML/callout mix)</li><li>Named Credentials (never hardcode endpoints)</li><li>Timeout handling</li><li>Retry strategy for unreliable systems</li></ul></div>
+<div class="bonus"><h5>Bonus</h5><ul><li>Platform Events for guaranteed delivery</li><li>Circuit breaker pattern</li><li>Idempotency (safe to retry)</li><li>Monitoring/alerting on callout failures</li></ul></div>`
+
+                    naturalAnswer: `<span class="speaker">You (systematic, acknowledging the constraint):</span>
+<span class="speech">"Right, so the first thing to establish here â€” you cannot make a callout directly from trigger context. Salesforce doesn't allow mixing DML operations with HTTP callouts in the same transaction. The trigger has already performed DML just by being in the after context."</span>
+<span class="speech">"So the standard approach is to go asynchronous. My go-to for simple cases is @future with callout=true. The trigger collects the record IDs, passes them to an @future method, and that method does the actual HTTP callout. I always use Named Credentials for the endpoint â€” never hardcode URLs or credentials."</span>
+<span class="pause">*anticipating the follow-up*</span>
+<span class="speech">"Now, if you're going to ask about reliability â€” and you should â€” @future has limitations. You can't chain them, you can't retry easily, and you have limited control over execution order. So for anything production-critical, I prefer Queueable implementing Database.AllowsCallouts."</span>
+<span class="speaker">On unreliable external systems:</span>
+<span class="speech">"Okay so 30-second response times â€” that's within Salesforce's 120-second timeout limit, but it's risky. I'd definitely set the timeout explicitly. But more importantly, I'd implement a retry pattern. With Queueable, I can catch the exception and enqueue another Queueable with a retry counter. After, say, 3 failures, I'd log it to a custom object and alert an admin."</span>
+<span class="speech">"For truly guaranteed delivery, I've used Platform Events. The trigger publishes a platform event â€” those survive even if the main transaction rolls back. Then a trigger on the platform event, or better yet, an external system subscribing via Pub/Sub API, handles the actual callout. That way you get at-least-once delivery semantics."</span>
+<span class="tip"><strong>Pro tip:</strong> Lead with the constraint ("you can't do callouts from trigger context") â€” this shows you know the platform fundamentals. Then build up from simple (@future) to robust (Queueable + retry) to enterprise (Platform Events). Shows depth of experience.</span>`                },
+                {
+                    q: `Explain your understanding of the LWC Security Model. If I have a component that needs to display sensitive data (SSN, salary) only to certain users, how would you implement that?`,
+                    followup: `Can a user bypass your client-side checks using browser dev tools? How do you ensure true security?`,
+                    expected: `<p><strong>LWC Security layers:</strong></p>
+<ul>
+<li><strong>Locker Service / Lightning Web Security (LWS)</strong> &mdash; Runtime sandbox. Components can't access other components' DOM. No global window manipulation. Strict mode JS.</li>
+<li><strong>FLS/CRUD enforcement</strong> &mdash; Lightning Data Service respects field-level security automatically. Custom Apex must enforce manually.</li>
+<li><strong>CSP (Content Security Policy)</strong> &mdash; No inline scripts, no eval(), no external scripts without CSP trusted sites.</li>
+</ul>
+<p><strong>For sensitive data:</strong></p>
+<pre><code>// APEX (server-side enforcement - THE REAL SECURITY)
+@AuraEnabled(cacheable=true)
+public static EmployeeData getEmployeeData(Id empId) {
+    // Check custom permission FIRST
+    if (!FeatureManagement.checkPermission('View_Sensitive_Data')) {
+        throw new AuraHandledException('Access denied');
+    }
+    // Also check FLS
+    if (!Schema.SObjectType.Employee__c.fields.SSN__c.isAccessible()) {
+        throw new AuraHandledException('Field not accessible');
+    }
+    return [SELECT Name, SSN__c, Salary__c FROM Employee__c WHERE Id = :empId WITH USER_MODE];
+}</code></pre>
+<pre><code>// LWC (client-side - UX only, NOT security)
+import HAS_PERMISSION from '@salesforce/customPermission/View_Sensitive_Data';
+
+get canViewSensitive() { return HAS_PERMISSION; }
+// Template: &lt;template lwc:if={canViewSensitive}&gt; ... &lt;/template&gt;</code></pre>
+<p><strong>Critical point:</strong> Client-side checks (lwc:if, JS conditionals) are for UX only. A user CAN open DevTools and see the component structure. <strong>True security must be server-side</strong> &mdash; Apex should never return sensitive data to unauthorized users. The Apex method is the security boundary.</p>
+<div class="must-mention"><h5>Must mention (critical for senior)</h5><ul><li>Security is enforced SERVER-SIDE (Apex), not client-side</li><li>Custom Permissions for feature-level access control</li><li>WITH USER_MODE or explicit FLS checks in Apex</li><li>Client-side checks are UX convenience only</li><li>Never trust the client</li></ul></div>
+<div class="bonus"><h5>Bonus</h5><ul><li>Mentions LWS vs old Locker Service differences</li><li>Data masking patterns (show last 4 of SSN)</li><li>Field Set usage for dynamic field visibility</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (clear and firm on security principles):</span>
+<span class="speech">"So the LWC security model has multiple layers. At the runtime level, you have Lightning Web Security â€” or Locker Service in older orgs â€” which sandboxes each component. Components can't access each other's DOM, no global window manipulation, strict JavaScript mode enforced."</span>
+<span class="speech">"Then there's Content Security Policy â€” no inline scripts, no eval(), external resources need to be in CSP Trusted Sites. This prevents XSS attacks at the platform level."</span>
+<span class="pause">*shifting to the core of the question*</span>
+<span class="speech">"But here's the critical thing about displaying sensitive data â€” and I feel strongly about this: the REAL security is always server-side. Never on the client. A user can open Chrome DevTools and inspect your component, read the DOM, see network responses. Any client-side lwc:if check is just for user experience, not security."</span>
+<span class="speech">"So here's what I'd do: In Apex, before returning sensitive data like SSN or salary, I check a Custom Permission â€” FeatureManagement.checkPermission('View_Sensitive_Data'). If the user doesn't have it, I throw an AuraHandledException. The data never leaves the server. I also add WITH USER_MODE to my SOQL, or explicitly check field-level security with Schema.isAccessible()."</span>
+<span class="speech">"On the LWC side, yes, I'd import the custom permission and use lwc:if to hide the UI elements â€” but that's purely cosmetic. Even if someone hacks past that, the Apex won't give them the data. Belt and suspenders."</span>
+<span class="speaker">On DevTools bypass:</span>
+<span class="speech">"Exactly â€” they can bypass client checks easily. That's why I always tell my team: the Apex method IS your security boundary. If the method never returns the data to unauthorized users, there's nothing to steal on the client. The client-side check just avoids showing an empty section or a permission error."</span>
+<span class="tip"><strong>Pro tip:</strong> Say "never trust the client" clearly and confidently. This is a senior-level signal that you understand web security beyond just Salesforce. Mention Custom Permissions specifically â€” it shows you know the granular access control mechanism.</span>`
+                }
+            ]
+        },
+        {
+            name: 'System Design & Architecture',
+            badge: 'system',
+            description: 'Large-scale design decisions, integration architecture, and scalability.',
+            questions: [
+                {
+                    q: `Design a system where Salesforce needs to sync Account and Contact data bidirectionally with an external ERP system. Updates can happen on both sides. How would you architect this?`,
+                    followup: `How do you handle conflicts when both systems update the same record within seconds of each other?`,
+                    expected: `<p><strong>Architecture components:</strong></p>
+<ul>
+<li><strong>Salesforce → ERP</strong>: Platform Events or Change Data Capture → Middleware (MuleSoft/Heroku) → ERP API</li>
+<li><strong>ERP → Salesforce</strong>: ERP publishes event → Middleware → Salesforce REST API or Platform Events</li>
+<li><strong>Middleware layer</strong>: Handles transformation, routing, retry logic, conflict resolution</li>
+<li><strong>External ID field</strong>: <code>ERP_Id__c</code> (unique, indexed) on Account/Contact for matching</li>
+</ul>
+<p><strong>Key design decisions:</strong></p>
+<ul>
+<li><strong>Event-driven</strong> (not polling) &mdash; near real-time, lower resource usage</li>
+<li><strong>Idempotent operations</strong> &mdash; Use upsert with External ID, safe to retry</li>
+<li><strong>Change tracking</strong> &mdash; Last_Modified_Source__c field ('Salesforce' or 'ERP') + Last_Sync_Date__c</li>
+<li><strong>Error handling</strong> &mdash; Dead letter queue for failed syncs, admin notifications</li>
+</ul>
+<p><strong>Conflict resolution strategy:</strong></p>
+<ul>
+<li><strong>Last-write-wins</strong> (simplest) &mdash; compare timestamps, most recent change takes priority</li>
+<li><strong>Source-of-truth per field</strong> &mdash; e.g., ERP owns financial fields, Salesforce owns relationship fields</li>
+<li><strong>Manual resolution queue</strong> &mdash; If both modified within X seconds, flag for human review</li>
+<li><strong>Conflict detection</strong>: Before update, check if Last_Modified_Date > Last_Sync_Date. If yes, potential conflict.</li>
+</ul>
+<div class="must-mention"><h5>Must mention</h5><ul><li>Middleware layer (never point-to-point for enterprise)</li><li>External IDs for matching/upsert</li><li>Event-driven over polling</li><li>Conflict resolution strategy</li><li>Error handling and retry mechanism</li></ul></div>
+<div class="bonus"><h5>Bonus</h5><ul><li>Mentions CDC (Change Data Capture) specifically</li><li>Discusses Pub/Sub API for the external subscriber</li><li>Talks about field-level sync rules</li><li>Mentions monitoring/observability (integration dashboards)</li></ul></div>`
+
+                    naturalAnswer: `<span class="speaker">You (whiteboarding the architecture):</span>
+<span class="speech">"Okay, bidirectional sync â€” this is a common enterprise pattern. Let me walk through how I'd architect this."</span>
+<span class="speech">"First principle: never point-to-point for enterprise integrations. We need a middleware layer â€” MuleSoft, Boomi, or even a custom Heroku app depending on budget. The middleware handles transformation, routing, error handling, and most importantly, conflict resolution."</span>
+<span class="pause">*drawing the flow*</span>
+<span class="speech">"For Salesforce outbound â€” Salesforce to ERP â€” I'd use Change Data Capture. When an Account or Contact is modified, CDC publishes an event. Our middleware subscribes via the Pub/Sub API, transforms the data into the ERP's format, and calls their API. This is event-driven, near real-time, and doesn't consume Salesforce API limits."</span>
+<span class="speech">"For inbound â€” ERP to Salesforce â€” the ERP publishes its own events or we set up a polling mechanism on the middleware side. Middleware transforms and calls the Salesforce REST API, using UPSERT with an External ID field. That's key â€” I'd have an ERP_Id__c field on Account and Contact, marked as unique and external ID. Upsert makes the operation idempotent â€” safe to retry without creating duplicates."</span>
+<span class="speaker">On conflict resolution:</span>
+<span class="speech">"Right, the hardest part. So I've handled this a few ways. The simplest is last-write-wins based on timestamps â€” but that can lose data. What I prefer for enterprise is source-of-truth per field. For example, the ERP owns financial fields like revenue and billing address. Salesforce owns relationship fields like Account Owner and Territory. Each field has ONE master."</span>
+<span class="speech">"For fields both systems can update, I add a Last_Modified_Source__c and Last_Sync_Date__c. If both modified within a 60-second window, the record goes into a conflict queue for a human to review. In practice, this happens rarely if you define field ownership clearly upfront."</span>
+<span class="tip"><strong>Pro tip:</strong> Draw the architecture as you talk â€” even verbally say "let me map this out." Mention CDC and Pub/Sub API by name. The field-ownership approach to conflicts is a strong senior-level answer that goes beyond textbook "last write wins."</span>`                },
+                {
+                    q: `Your org has 50 million records in a custom object. Users complain that reports and list views are slow. An admin asks you to "fix performance." What do you do?`,
+                    followup: `Would you recommend Big Objects or External Objects? When would you use Data Archiving?`,
+                    expected: `<p><strong>Investigation approach:</strong></p>
+<ul>
+<li>Check which queries are slow (Setup → Query Plan tool, Debug Logs with DB_TOTAL)</li>
+<li>Look at indexes &mdash; are filter fields indexed?</li>
+<li>Check selectivity &mdash; Salesforce optimizer only uses index if filter returns &lt;10% of records (or &lt;333K from 1M+ table)</li>
+<li>Look at sharing model &mdash; Private sharing with complex role hierarchy = slow queries</li>
+</ul>
+<p><strong>Optimization strategies:</strong></p>
+<ul>
+<li><strong>Custom indexes</strong> &mdash; Request from Salesforce Support for non-standard fields. Composite indexes for multi-field filters.</li>
+<li><strong>Skinny tables</strong> &mdash; Request for frequently queried field combinations (bypasses wide table reads)</li>
+<li><strong>Selective queries</strong> &mdash; Ensure WHERE clauses use indexed fields first</li>
+<li><strong>Archiving old data</strong> &mdash; Move records older than X years to Big Objects or external storage</li>
+<li><strong>Data skew</strong> &mdash; Check for Account data skew (one account with millions of children)</li>
+</ul>
+<p><strong>Big Objects vs External Objects vs Archiving:</strong></p>
+<ul>
+<li><strong>Big Objects</strong>: For massive historical/audit data (billions of records) that needs SOQL queries. Limited query capabilities (only indexed fields, no aggregate). Use for: IoT data, event logs, historical metrics.</li>
+<li><strong>External Objects</strong>: Data stays in external system, accessed via OData or custom adapter. No storage in Salesforce. Use for: ERP data you need to display but not own.</li>
+<li><strong>Data Archiving</strong>: Move old records to Big Objects or external system, delete from main object. Reduces working set. Use for: closed cases, old opportunities, expired contracts.</li>
+</ul>
+<div class="must-mention"><h5>Must mention</h5><ul><li>Query selectivity and indexes</li><li>Investigation before solution (don't guess)</li><li>Skinny tables for performance</li><li>Data archiving as a strategy</li><li>Sharing model impact on query performance</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (methodical, not jumping to solutions):</span>
+<span class="speech">"First thing â€” I wouldn't jump to a solution without investigating. 'Fix performance' is vague. I need to understand WHICH queries are slow, WHAT filters users are applying, and WHETHER this is a query optimization problem or a data volume problem."</span>
+<span class="speech">"My first step is the Query Plan tool in Developer Console. I'd take the SOQL behind the slow report and run it through the optimizer. It'll tell me if it's doing a full table scan or using an index. With 50 million records, a table scan is going to be brutal."</span>
+<span class="pause">*getting into specifics*</span>
+<span class="speech">"Salesforce only uses an index if the filter returns less than 10% of total records â€” or less than 333,000 from a million-record table. With 50M records, that threshold is 5 million. So I'd check: are the filter fields indexed? Are they selective enough?"</span>
+<span class="speech">"If standard indexes aren't enough, I'd request custom indexes from Salesforce Support for the fields users filter on most. Maybe even a composite index if they always filter on two fields together. I'd also look into skinny tables â€” Salesforce can create a narrow table with just the frequently queried fields, which dramatically speeds up reads."</span>
+<span class="speech">"Beyond indexing, I'd look at the sharing model. If the org has private sharing with a complex role hierarchy, every query has to evaluate sharing rules. That's expensive at 50M records. Sometimes moving to public read-only and using other security mechanisms is the performance fix."</span>
+<span class="speaker">On archiving vs Big Objects:</span>
+<span class="speech">"For the long term, I'd propose data archiving. If half those 50M records are older than 2 years and rarely accessed â€” closed cases, expired contracts â€” I'd move them to Big Objects. Users can still query historical data through Big Objects, but the main object shrinks to 25M records. That alone might solve the performance issue without any other changes."</span>
+<span class="tip"><strong>Pro tip:</strong> Start with "I'd investigate first" â€” never jump to a solution. Mentioning the Query Plan tool, selectivity thresholds (10% / 333K), and skinny tables shows you've actually dealt with large data volumes, not just read about them.</span>`
+                },
+                {
+                    q: `You're tasked with building a multi-step approval process where the steps are dynamic (different for each department, configurable by admins without code). How would you design this?`,
+                    followup: `How do you handle the case where an approver is on vacation? What about parallel approvals?`,
+                    expected: `<p><strong>Design approach &mdash; Metadata-driven:</strong></p>
+<ul>
+<li><strong>Custom Metadata Types</strong> for configuration (deployable, admin-editable, cacheable)</li>
+<li><code>Approval_Config__mdt</code>: Department, Step Number, Approver Role/Queue, Criteria formula, Is Parallel, Timeout Days</li>
+<li><strong>Apex process engine</strong> that reads metadata and routes approvals dynamically</li>
+<li>Could leverage standard Approval Process with dynamic initial submitter (limited) OR build fully custom</li>
+</ul>
+<p><strong>Custom solution architecture:</strong></p>
+<pre><code>// Custom objects:
+// Approval_Request__c (junction: Record Id, Status, Current Step)
+// Approval_Step__c (child: Approver, Status, Decision, Comments, Date)
+
+// Engine reads CMT config for department:
+List&lt;Approval_Config__mdt&gt; steps = [
+    SELECT Step_Number__c, Approver_Role__c, Is_Parallel__c, Timeout_Days__c
+    FROM Approval_Config__mdt 
+    WHERE Department__c = :dept 
+    ORDER BY Step_Number__c
+];
+
+// Create Approval_Step__c records for current step
+// If Is_Parallel = true, create multiple steps at same Step_Number
+// Platform Event for notifications</code></pre>
+<p><strong>Vacation/delegation:</strong></p>
+<ul>
+<li>Delegated Approver field on User (standard Salesforce feature)</li>
+<li>OR custom: Delegation__c object (User, Delegate, Start Date, End Date)</li>
+<li>Engine checks active delegations before assigning</li>
+<li>Timeout: Scheduled job checks overdue steps, auto-escalates or auto-approves based on config</li>
+</ul>
+<p><strong>Parallel approvals:</strong> Multiple Approval_Step__c records at same step number. All must approve (AND) or any can approve (OR) — configurable in metadata.</p>
+<div class="must-mention"><h5>Must mention</h5><ul><li>Custom Metadata for admin-configurable rules</li><li>Separation of engine (code) from configuration (metadata)</li><li>Delegation/vacation handling</li><li>Timeout and escalation mechanism</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (solution architect mode):</span>
+<span class="speech">"Interesting â€” so the key requirement here is 'configurable by admins without code.' That immediately tells me Custom Metadata Types. They're deployable, they're admin-editable in the UI, and they're cacheable in Apex for performance."</span>
+<span class="speech">"Here's how I'd design it: I'd create a metadata type called something like Approval_Config__mdt with fields for Department, Step Number, Approver Role or Queue, whether it's parallel, timeout days, and maybe criteria as a formula or filter logic string."</span>
+<span class="pause">*thinking through the architecture*</span>
+<span class="speech">"Then I'd build an Apex approval engine that reads this config. When a record is submitted, the engine queries the CMT for that department's steps, creates Approval_Step records for the current step, and notifies the assigned approver. When they approve, the engine checks if there's a next step and advances."</span>
+<span class="speech">"The beauty of this is that admins can add new departments, change step order, add approvers â€” all without touching code. They just create or edit metadata records. And since it's metadata, it flows through our CI/CD pipeline for audit."</span>
+<span class="speaker">On vacation handling:</span>
+<span class="speech">"For vacation delegation, I'd create a simple Delegation custom object â€” Delegator, Delegate, Start Date, End Date. When the engine assigns an approver, it first checks for active delegations. If the approver has one, it routes to the delegate instead."</span>
+<span class="speech">"For timeouts, I'd have a scheduled Apex job running daily that queries overdue steps â€” where Step Created Date plus Timeout Days is past today. Based on the config, it either auto-escalates to the next level, auto-approves, or sends a reminder."</span>
+<span class="speech">"Parallel approvals are handled by creating multiple Approval_Step records at the same step number. The engine checks: if the config says 'All must approve,' it waits for all steps at that level to complete. If it's 'Any,' the first approval advances to the next round."</span>
+<span class="tip"><strong>Pro tip:</strong> Emphasize the separation of engine (code) from configuration (metadata). This is a core enterprise architecture principle. Also mention that standard Approval Processes have limitations for truly dynamic routing â€” that's why you'd go custom.</span>`
+                }
+            ]
+        },
+        {
+            name: 'Scenario-Based Problem Solving',
+            badge: 'scenario',
+            description: 'Real-world problems that test your ability to think on your feet.',
+            questions: [
+                {
+                    q: `A business user reports: "When I create an Opportunity and add Products, sometimes the total amount is wrong. It only happens for some users." How do you troubleshoot this?`,
+                    followup: `You find it's caused by a trigger and a flow both updating the Amount field. How do you resolve the conflict?`,
+                    expected: `<p><strong>Troubleshooting approach:</strong></p>
+<ol style="padding-left:18px;">
+<li><strong>Reproduce</strong> &mdash; Get exact steps, which users, which products. "Sometimes" = specific conditions.</li>
+<li><strong>Check automation inventory</strong> &mdash; ALL triggers, flows, process builders, workflow rules on Opportunity and OpportunityLineItem.</li>
+<li><strong>Check profiles/permission sets</strong> &mdash; "Only some users" = likely permission-dependent. Maybe a trigger runs conditionally based on profile, or a Flow has entry criteria tied to a permission.</li>
+<li><strong>Debug log for affected user</strong> &mdash; Reproduce with logging enabled. Look at field values at each step of execution order.</li>
+<li><strong>Check order of execution</strong> &mdash; Before trigger → validation → after trigger → workflow → flow. Multiple automations overwriting each other?</li>
+</ol>
+<p><strong>Conflict resolution (trigger vs flow both updating Amount):</strong></p>
+<ul>
+<li><strong>Option 1: Single owner</strong> &mdash; Pick ONE automation to own Amount calculation. Delete/deactivate the other. Best practice: ONE automation per field.</li>
+<li><strong>Option 2: Execution order awareness</strong> &mdash; If both must exist, understand that flows run AFTER triggers (in standard order). The flow's value will "win." Restructure accordingly.</li>
+<li><strong>Option 3: Before-save flow ONLY</strong> &mdash; Move calculation to before-save flow (runs before triggers in record-triggered context). Or move entirely to before trigger.</li>
+<li><strong>Documentation</strong> &mdash; Create automation inventory document. Each field should have ONE owner.</li>
+</ul>
+<div class="must-mention"><h5>Must mention</h5><ul><li>Systematic debugging approach (not guessing)</li><li>"Some users" = permission/profile/role related</li><li>Automation inventory (know ALL automations on object)</li><li>Execution order awareness</li><li>ONE automation should own each field</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (experienced debugger, calm and systematic):</span>
+<span class="speech">"Alright, 'sometimes wrong' and 'only some users' â€” those are my two biggest clues. 'Sometimes' usually means there's a specific condition triggering it, and 'some users' means it's likely permission-dependent or profile-dependent."</span>
+<span class="speech">"First thing I'd do is get very specific: which users exactly? What's different about their profiles? What products are they adding? I'd try to find the pattern â€” is it users in a specific role? Users without a certain permission set?"</span>
+<span class="pause">*methodical approach*</span>
+<span class="speech">"Next, I'd build an automation inventory for Opportunity and OpportunityLineItem. Every trigger, every flow, every process builder, every workflow rule. I'd check Setup â†’ Object â†’ Triggers, then Flow, then Process Builder. I've been burned before by automation I didn't know existed â€” maybe a managed package trigger, or a flow an admin created six months ago."</span>
+<span class="speech">"Then I'd enable debug logs for an affected user, reproduce the issue, and trace the field value through the execution order. I'd literally track: what's the Amount value after the before trigger? After the after trigger? After the flow? I'd find where it goes wrong."</span>
+<span class="speaker">On trigger vs flow conflict:</span>
+<span class="speech">"Ah, classic. So flows run after triggers in the standard execution order. If both are updating Amount, the flow wins because it runs last. Here's my strong opinion: one automation should own each field. Period."</span>
+<span class="speech">"I'd sit down with the team and decide: who owns the Amount calculation? If it's the trigger, deactivate the flow's update of that field. If it's the flow, remove it from the trigger. Then I'd document it â€” we maintain an automation registry spreadsheet showing which automation owns which field on which object. Prevents this from happening again."</span>
+<span class="tip"><strong>Pro tip:</strong> Start with the clues ("sometimes" + "some users" = conditional logic). Mentioning an automation inventory shows you've dealt with org complexity. The "one owner per field" principle is a strong senior stance.</span>`
+                },
+                {
+                    q: `Your team is deploying a release this weekend. It includes: 2 new triggers, a Flow, 5 Apex classes, 3 LWC components, and a Custom Metadata change. Walk me through your deployment strategy.`,
+                    followup: `The deployment fails at 2 AM because a test class is failing in production (passes in sandbox). What do you do?`,
+                    expected: `<p><strong>Deployment strategy:</strong></p>
+<ul>
+<li><strong>Pre-deployment</strong>:
+    <ul>
+    <li>Validate in production (deploy with checkOnly=true) days before</li>
+    <li>Run all tests in prod sandbox (Full copy) to catch org-specific issues</li>
+    <li>Create rollback plan (know what to delete/deactivate if things go wrong)</li>
+    <li>Communication: email stakeholders with timeline, expected downtime</li>
+    <li>Freeze change sets / PRs to main branch</li>
+    </ul>
+</li>
+<li><strong>Deployment order matters</strong>:
+    <ul>
+    <li>1. Custom objects/fields (metadata dependencies)</li>
+    <li>2. Apex classes (triggers depend on these)</li>
+    <li>3. Triggers</li>
+    <li>4. LWC components</li>
+    <li>5. Flows (may reference Apex or fields)</li>
+    <li>6. Custom Metadata records (data, not metadata)</li>
+    <li>7. Permission Sets / Profiles</li>
+    </ul>
+</li>
+<li><strong>Post-deployment</strong>: Smoke testing, monitoring error logs, check scheduled jobs</li>
+</ul>
+<p><strong>When test fails at 2 AM:</strong></p>
+<ul>
+<li>DON'T panic. Read the error message carefully.</li>
+<li>Common cause: <strong>org-specific data</strong> &mdash; test queries real data, or seeAllData somewhere</li>
+<li>Common cause: <strong>Other automation</strong> in prod that doesn't exist in sandbox (managed package trigger, admin-created flow)</li>
+<li>Options: (a) Quick fix the test if obvious. (b) Exclude that test and redeploy with <code>--testlevel RunSpecifiedTests</code>. (c) Abort and fix Monday if non-critical.</li>
+<li><strong>Decision framework</strong>: Is it a test issue or a real logic issue? If the actual feature code is fine and only the test is failing due to org context, option (b) is acceptable with a follow-up ticket.</li>
+</ul>
+<div class="must-mention"><h5>Must mention</h5><ul><li>Validate in production beforehand</li><li>Deployment order awareness</li><li>Rollback plan</li><li>RunSpecifiedTests as a safety valve</li><li>Difference between test failure and logic failure</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (organized, experienced with releases):</span>
+<span class="speech">"Alright, a release with triggers, flows, Apex, LWC, and metadata â€” this needs a solid plan. I've done enough weekend deployments to know what can go wrong."</span>
+<span class="speech">"First â€” days before the actual deployment â€” I'd run a validation in production. sfdx force:source:deploy with the --checkonly flag and --testlevel RunLocalTests. This catches any test failures or dependency issues early, not at 2 AM Saturday."</span>
+<span class="speech">"I'd also make sure we have a rollback plan documented. What's our back-out strategy if something breaks? For Apex and LWC, we can redeploy the previous version. For flows, we deactivate the new version and reactivate the old. For custom metadata, we have the original values noted down."</span>
+<span class="pause">*walking through the deployment order*</span>
+<span class="speech">"On the actual deployment, order matters. I go: fields and objects first, because everything else depends on them. Then Apex classes â€” triggers reference these. Then triggers. Then LWC. Then Flows, because they might reference Apex invocable actions. Custom metadata records last since they're data, not structure. Permission sets at the very end to 'light up' the features."</span>
+<span class="speech">"Post-deployment: I have a smoke test checklist. I'd verify each new trigger fires correctly, open the LWC components, run through the flow manually, check that the metadata values are correct. I'd also monitor the error logs for the first hour."</span>
+<span class="speaker">On 2 AM test failure:</span>
+<span class="speech">"Okay, don't panic. First question: is this a test issue or a real logic issue? I'd read the error carefully. If it's something like 'MIXED_DML_EXCEPTION' or 'seeAllData issue' or 'assertion failed because of existing prod data' â€” that's a test problem, not a code problem."</span>
+<span class="speech">"In that case, I'd redeploy using --testlevel RunSpecifiedTests and exclude that one test. The feature works fine; we just have a test that doesn't account for production data. I'd create a ticket for Monday to fix the test. If it's a real logic failure â€” the actual feature code is broken â€” I'd abort and fix it Monday unless it's business-critical."</span>
+<span class="tip"><strong>Pro tip:</strong> Mention the validation deploy days in advance â€” this is what separates experienced deployers from beginners. Also, having a clear decision framework for 2 AM failures ("test issue vs logic issue") shows you won't panic under pressure.</span>`
+                },
+                {
+                    q: `A new requirement comes in: "We need to send real-time notifications to 50 external partner systems whenever an Order is confirmed." Each partner has a different API endpoint. How do you design this without hitting governor limits?`,
+                    followup: `What happens if 5 of the 50 partners are down? How do you ensure they eventually get the data?`,
+                    expected: `<p><strong>Design (you CANNOT make 50 callouts synchronously):</strong></p>
+<ul>
+<li><strong>Platform Events</strong>: Order confirmation publishes <code>Order_Confirmed__e</code> platform event</li>
+<li><strong>Fan-out architecture</strong>: External middleware (MuleSoft, AWS EventBridge, Heroku) subscribes via Pub/Sub API and fans out to all 50 partners</li>
+<li><strong>Alternative</strong>: If must stay on-platform, use Queueable chaining (each job makes 5-10 callouts, chains next batch). But middleware is strongly preferred.</li>
+</ul>
+<pre><code>// Trigger publishes event (guaranteed delivery)
+Order_Confirmed__e event = new Order_Confirmed__e(
+    Order_Id__c = order.Id,
+    Order_Data__c = JSON.serialize(orderData)
+);
+EventBus.publish(event);
+
+// External middleware subscribes via Pub/Sub API
+// Middleware fans out to 50 partners in parallel
+// Each with its own retry policy</code></pre>
+<p><strong>For down partners:</strong></p>
+<ul>
+<li><strong>Middleware handles retry</strong> with exponential backoff per partner</li>
+<li><strong>Dead letter queue</strong> for messages that fail after N retries</li>
+<li><strong>Partner health dashboard</strong> showing delivery status</li>
+<li><strong>Webhook retry</strong> or <strong>pull model</strong> as fallback (partners can poll for missed events)</li>
+<li>If on-platform only: Custom object <code>Outbound_Notification__c</code> with status per partner, batch job retries failures</li>
+</ul>
+<div class="must-mention"><h5>Must mention</h5><ul><li>50 callouts is beyond single-transaction limit (100 max but resource-intensive)</li><li>Platform Events for decoupling</li><li>Middleware for fan-out (enterprise pattern)</li><li>Retry and dead letter queue for reliability</li><li>Governor limit awareness (can't do 50 sequential callouts efficiently)</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (immediately identifying the constraint):</span>
+<span class="speech">"50 external systems — okay, so right away, you cannot do this synchronously within Salesforce. Even though the limit is technically 100 callouts per transaction, making 50 sequential HTTP calls would be incredibly slow and fragile. One timeout kills everything."</span>
+<span class="speech">"This is a fan-out problem, and the right pattern is: Salesforce publishes ONE event, and an external system handles the fan-out to all 50 partners."</span>
+<span class="pause">*designing the architecture*</span>
+<span class="speech">"Here's my design: When an Order is confirmed, the trigger — or better, a before-save flow — publishes a Platform Event: Order_Confirmed__e. It includes the Order ID and maybe a JSON payload of the key data. That's it on the Salesforce side. One event, done."</span>
+<span class="speech">"Then we have a middleware layer — could be MuleSoft, AWS EventBridge, or even a lightweight Heroku app — subscribing to that event via the Pub/Sub API. The middleware receives the event and fans out to all 50 partners in parallel. Each partner has its own endpoint configuration, its own retry policy, its own authentication. The middleware handles all of that."</span>
+<span class="speech">"The reason I prefer middleware over doing this on-platform with Queueable chaining is: maintainability and visibility. I can see a dashboard showing delivery status per partner, retry counts, failure rates. That's really hard to build with just Apex."</span>
+<span class="speaker">On partners being down:</span>
+<span class="speech">"This is where the middleware really earns its keep. Each partner gets its own retry queue with exponential backoff. If Partner A is down, we retry at 1 min, 5 min, 30 min, 2 hours. After, say, 5 failures, the message goes to a dead letter queue and we alert the integration team."</span>
+<span class="speech">"As a fallback, I'd also expose a REST endpoint where partners can pull missed events — like 'give me all Order events since my last successful receive.' That way even if our push fails, they have a pull mechanism to catch up."</span>
+<span class="tip"><strong>Pro tip:</strong> Immediately saying "this is a fan-out problem" and "you can't do this on-platform efficiently" shows architectural maturity. The middleware-as-fan-out pattern is the enterprise answer that interviewers want to hear.</span>`
+                }
+            ]
+        },
+        {
+            name: 'Leadership & Best Practices',
+            badge: 'behavioral',
+            description: 'How you lead technically, mentor juniors, and make architectural decisions.',
+            questions: [
+                {
+                    q: `A junior developer on your team writes a trigger with SOQL inside a for loop. They argue "it works fine in my testing." How do you handle this?`,
+                    followup: `How do you build a culture where these issues are caught before code review?`,
+                    expected: `<p><strong>How to handle (demonstrate both technical leadership and empathy):</strong></p>
+<ul>
+<li><strong>Don't just say "it's wrong"</strong> &mdash; Explain WHY. Show what happens with Data Loader (200 records per batch). Calculate: 200 iterations × 1 query = 200 queries > 100 limit = FAILURE in production.</li>
+<li><strong>Pair program the fix</strong> &mdash; Don't just rewrite it. Walk them through the bulkified version together. They learn more by doing.</li>
+<li><strong>Code review comment</strong> should be educational, not critical: "This works for single-record testing, but in production, Data Loader, batch jobs, and bulk APIs process 200+ records at once. Here's the pattern..."</li>
+<li><strong>Create a teaching moment</strong> &mdash; Write a unit test that inserts 201 records and prove it fails. Make it tangible.</li>
+</ul>
+<p><strong>Building preventive culture:</strong></p>
+<ul>
+<li><strong>Team coding standards doc</strong> &mdash; Clear patterns with examples (do this, not that)</li>
+<li><strong>PR template checklist</strong> &mdash; "No SOQL/DML in loops?" checkbox</li>
+<li><strong>Static analysis</strong> in CI pipeline (PMD rules, Salesforce Code Analyzer)</li>
+<li><strong>Test requirements</strong> &mdash; All test methods must include 200+ record scenarios</li>
+<li><strong>Lunch & learns</strong> &mdash; Monthly sessions on common anti-patterns</li>
+<li><strong>Shared trigger framework</strong> &mdash; Enforces patterns structurally (hard to do it wrong)</li>
+</ul>
+<div class="must-mention"><h5>What interviewers look for</h5><ul><li>Empathy + education (not just authority)</li><li>Concrete strategies (not vague "I'd talk to them")</li><li>System-level prevention (CI, frameworks, standards)</li><li>Understanding that their test "worked" because it was single-record</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (empathetic but firm, leadership voice):</span>
+<span class="speech">"So first — I wouldn't just say 'that's wrong, fix it.' That kills learning. Their argument actually makes sense from their perspective: they tested it, it worked. They're not wrong that it works in testing — they're wrong about production scale, and that's a teaching opportunity."</span>
+<span class="speech">"Here's what I'd do: I'd pull up a chair and say, 'Hey, let me show you something.' I'd write a test method that inserts 201 records — the minimum batch size for bulk operations. Run it. Watch it fail with SOQL 101. Now they've seen it with their own eyes."</span>
+<span class="pause">*explaining the approach*</span>
+<span class="speech">"Then I'd explain the WHY: 'Your trigger works perfectly for one record. But when a Data Loader, a batch job, or even a list view mass-update runs, Salesforce processes 200 records per chunk. Your loop runs 200 times, makes 200 queries. The limit is 100. Boom.' Make it concrete."</span>
+<span class="speech">"After that, I'd pair-program the fix with them. Not rewrite it for them — walk them through collecting the IDs first, doing one bulk query, putting results in a Map, then iterating. They learn the pattern by doing it themselves."</span>
+<span class="speaker">On building preventive culture:</span>
+<span class="speech">"Long term, I don't want to rely on catching this in code review every time. So I'd push for three things: First, a static analysis rule in our CI pipeline — PMD has an AvoidSoqlInLoops rule that literally blocks the PR. Second, our PR template has a checklist that includes 'No SOQL/DML in loops.' Third, I'd share a coding standards doc with clear 'do this, not that' examples."</span>
+<span class="speech">"I also do monthly lunch-and-learns where we review common anti-patterns. Makes it a learning culture rather than a blame culture. People start catching these themselves before it even reaches review."</span>
+<span class="tip"><strong>Pro tip:</strong> Lead with empathy, not authority. Showing the failing test is more powerful than just saying "it's wrong." Then pivot to systemic solutions (CI rules, standards docs, team culture). This shows you're a leader, not just a gatekeeper.</span>`
+                },
+                {
+                    q: `You're asked to evaluate whether to build a feature using Flow or Apex. What's your decision framework? Give me a specific example where you chose one over the other and why.`,
+                    followup: `An admin who knows Flow well says they can build it in Flow in 2 hours. You think Apex is better for maintainability. How do you handle the discussion?`,
+                    expected: `<p><strong>Decision framework:</strong></p>
+<ul>
+<li><strong>Use Flow when:</strong>
+    <ul>
+    <li>Simple field updates, email alerts, task creation</li>
+    <li>Admin team needs to maintain/modify without developer</li>
+    <li>Requirements change frequently (declarative = faster changes)</li>
+    <li>Simple branching logic (if/else, decision elements)</li>
+    <li>Screen-based user input gathering</li>
+    </ul>
+</li>
+<li><strong>Use Apex when:</strong>
+    <ul>
+    <li>Complex business logic (multi-object transactions, calculations)</li>
+    <li>Need unit testing and version control (CI/CD pipeline)</li>
+    <li>Performance critical (bulk operations, complex queries)</li>
+    <li>Integration callouts</li>
+    <li>Reusable logic called from multiple places</li>
+    <li>Error handling needs to be sophisticated</li>
+    </ul>
+</li>
+</ul>
+<p><strong>Handling the discussion with admin:</strong></p>
+<ul>
+<li><strong>Respect their expertise</strong> &mdash; "You're right, Flow can do this. Let me share my concerns..."</li>
+<li><strong>Frame as trade-offs, not right/wrong</strong> &mdash; Show maintainability over 2 years (who debugs it when it breaks at 2 AM?)</li>
+<li><strong>Propose hybrid</strong> &mdash; Flow for the simple routing, invocable Apex for the complex calculation</li>
+<li><strong>Use data</strong> &mdash; "Last quarter, 3 production issues were complex Flows that took days to debug. Similar Apex issues took hours."</li>
+<li><strong>Agree on criteria TOGETHER</strong> &mdash; Create a shared decision tree the whole team uses</li>
+</ul>
+<div class="must-mention"><h5>Key signals</h5><ul><li>Clear decision framework (not dogmatic "always use Apex")</li><li>Acknowledges Flow's strengths (not dismissive)</li><li>Considers maintainability and team skills</li><li>Handles disagreement professionally</li><li>Mentions invocable Apex as a bridge pattern</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (balanced, not dogmatic):</span>
+<span class="speech">"I have a simple decision framework that I've refined over the years. It comes down to three questions: Who will maintain this? How complex is the logic? And does it need version control?"</span>
+<span class="speech">"If it's straightforward â€” field updates, email alerts, task creation, simple branching â€” and the admin team can own it long-term, Flow is the right choice. Admins can modify it without waiting for a developer sprint. That's a real business advantage."</span>
+<span class="speech">"I'd use Apex when the logic is complex â€” multi-object transactions, heavy calculations, sophisticated error handling. Also when it needs to live in version control and go through CI/CD. Flows are great but debugging a complex flow at 2 AM is much harder than reading Apex with proper logging."</span>
+<span class="pause">*addressing the scenario*</span>
+<span class="speech">"Now, for the situation where an admin says they can build it in Flow in 2 hours â€” I'd respect that. They know Flow better than I do. But I'd ask: 'Walk me through what happens when this breaks in production. Who debugs it? How do we trace the issue?' If the answer is 'the developer team,' then we need it in a format we can support."</span>
+<span class="speech">"My favorite compromise is the hybrid approach: invocable Apex. The admin builds the Flow for routing and user interaction, and the complex calculation or callout lives in an Apex class annotated with @InvocableMethod. Best of both worlds â€” the admin can wire it in Flow Builder, but the complex logic is in testable, version-controlled code."</span>
+<span class="speech">"I'd frame it collaboratively: 'Let's build this together. You handle the flow routing since you're faster at that, and I'll write the calculation piece as invocable Apex. That way either of us can maintain our part.'"</span>
+<span class="tip"><strong>Pro tip:</strong> Never say "Apex is always better." Interviewers want to hear a nuanced framework. Mentioning invocable Apex as the bridge pattern shows you can find solutions that satisfy both admin and developer needs. The collaborative framing shows leadership maturity.</span>`
+                },
+                {
+                    q: `Tell me about the most complex Salesforce project you've delivered. What was the architecture? What would you do differently if you did it again?`,
+                    followup: `What was the hardest technical decision you made on that project?`,
+                    expected: `<p><strong>What interviewers evaluate:</strong></p>
+<ul>
+<li><strong>Scope and complexity</strong> &mdash; Multi-object? Integration? Custom UI? How many users?</li>
+<li><strong>Your role</strong> &mdash; Did you architect it or just implement someone else's design?</li>
+<li><strong>Technical depth</strong> &mdash; Can you explain WHY you made specific technology choices?</li>
+<li><strong>Self-awareness</strong> &mdash; Admitting what you'd change shows growth and honesty.</li>
+<li><strong>Communication</strong> &mdash; Can you explain complex systems clearly?</li>
+</ul>
+<p><strong>Strong answer structure:</strong></p>
+<ol style="padding-left:18px;">
+<li><strong>Context</strong>: What problem were you solving? Business impact?</li>
+<li><strong>Architecture</strong>: Draw the high-level picture (objects, integrations, components). Name specific patterns used.</li>
+<li><strong>Challenges</strong>: What was genuinely hard? Governor limits? Performance? Complex requirements?</li>
+<li><strong>Outcome</strong>: Metrics if possible (users, records, performance improvements)</li>
+<li><strong>Retrospective</strong>: "If I did it again, I'd..." (shows maturity)</li>
+</ol>
+<p><strong>Good "do differently" answers:</strong></p>
+<ul>
+<li>"I'd introduce a trigger framework from day 1 instead of retrofitting later"</li>
+<li>"I'd use Platform Events instead of synchronous callouts for better reliability"</li>
+<li>"I'd push back on the timeline more &mdash; we cut testing short and paid for it in bugs"</li>
+<li>"I'd invest more in Custom Metadata instead of hardcoded values"</li>
+</ul>
+<div class="must-mention"><h5>Red flags interviewers watch for</h5><ul><li>"Everything went perfectly" (lacks self-awareness)</li><li>Can't explain technical decisions</li><li>Takes all credit (no team acknowledgment)</li><li>No concrete metrics or outcomes</li></ul></div>`
+                    naturalAnswer: `<span class="speaker">You (storytelling mode, confident):</span>
+<span class="speech">"The most complex project I delivered was a full CPQ-like solution â€” custom, because Salesforce CPQ didn't fit our pricing model. We had tiered pricing, bundle discounts, and approval workflows that were completely dynamic based on deal size and product combination."</span>
+<span class="pause">*setting the scene*</span>
+<span class="speech">"The architecture was: a set of Custom Metadata Types defining all pricing rules â€” tiers, discount thresholds, bundle configurations. An Apex pricing engine that reads this metadata and calculates the quote price. A Lightning Web Component for the quote builder UI â€” drag-and-drop products, see price update in real-time. And an integration with our ERP for inventory checks."</span>
+<span class="speech">"I was the technical lead. I designed the data model, built the pricing engine, mentored two junior devs who built the LWC components, and I owned the ERP integration. About 300 users ended up on it, processing around 2,000 quotes per month."</span>
+<span class="speech">"The hardest technical decision was whether to calculate pricing client-side or server-side. Client-side would be faster â€” instant price updates as you add products. But it meant shipping all pricing rules to the client, which was a security concern, and keeping JavaScript pricing logic in sync with Apex validation pricing logic."</span>
+<span class="speech">"We went server-side with aggressive caching. An @AuraEnabled(cacheable=true) method returns the pricing metadata once, and the LWC does lightweight calculations locally for preview. On save, Apex recalculates authoritatively. Took us two weeks longer but we never had price discrepancy bugs."</span>
+<span class="speaker">On what I'd do differently:</span>
+<span class="speech">"Two things. First, I'd introduce a trigger framework from day one. We started without one, and by month three we had trigger logic scattered everywhere. We spent a full sprint refactoring into a handler pattern. Should have done it from the start."</span>
+<span class="speech">"Second, I'd push back harder on timeline. We compressed testing to one week instead of two, and we paid for it in post-launch bugs. Three production hotfixes in the first month. I learned that saying 'we need more testing time' early is way cheaper than fixing bugs in production later."</span>
+<span class="tip"><strong>Pro tip:</strong> Have THIS story prepared before the interview. Practice the 2-minute version. Include: your role (lead/architect, not just coder), concrete numbers (users, records, timeline), and honest retrospective. "Everything went perfectly" is a red flag â€” show self-awareness with specific "do differently" items.</span>`
+                }
+            ]
+        }
+    ];
+
+    // ============= STATE =============
+    let currentRound = 0;
+    let currentQuestion = 0;
+    let scores = []; // [{round, question, rating}]
+    let startTime = Date.now();
+    let timerInterval;
+
+    // ============= TIMER =============
+    function startTimer() {
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const secs = (elapsed % 60).toString().padStart(2, '0');
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = `\u23F1 ${mins}:${secs}`;
+            if (elapsed > 2700) timerEl.classList.add('warning'); // 45 min warning
+        }, 1000);
+    }
+
+    function stopTimer() { clearInterval(timerInterval); }
+
+    // ============= RENDERING =============
+    function showRoundIntro() {
+        const round = rounds[currentRound];
+        currentQuestion = 0;
+        document.getElementById('roundInfo').textContent = `Round ${currentRound + 1}/${rounds.length}`;
+        updateProgress();
+
+        document.getElementById('content').innerHTML = `
+            <div class="round-header">
+                <h2>Round ${currentRound + 1}: ${round.name}</h2>
+                <p>${round.description}</p>
+                <span class="round-badge ${round.badge}">${round.name}</span>
+            </div>
+            <div class="interviewer">
+                <div class="interviewer-avatar">&#x1F464;</div>
+                <div class="interviewer-bubble">
+                    <div class="interviewer-name">Interviewer</div>
+                    <p>Welcome to ${currentRound === 0 ? 'the interview' : 'round ' + (currentRound + 1)}. ${currentRound === 0 ? "I see you have 5 years of Salesforce development experience. Let's dive into some technical questions to understand your depth." : "Let's continue."} Take your time with each answer — I'm looking for depth and real-world experience, not textbook answers.</p>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="showQuestion()">I'm ready, let's go &rarr;</button>
+            </div>
+        `;
+    }
+
+    function showQuestion() {
+        const round = rounds[currentRound];
+        const q = round.questions[currentQuestion];
+        updateProgress();
+
+        document.getElementById('content').innerHTML = `
+            <div class="interviewer">
+                <div class="interviewer-avatar">&#x1F464;</div>
+                <div class="interviewer-bubble">
+                    <div class="interviewer-name">Interviewer &mdash; ${round.name} (Q${currentQuestion + 1}/${round.questions.length})</div>
+                    <p>${q.q}</p>
+                    ${q.followup ? `<div class="followup">Follow-up: ${q.followup}</div>` : ''}
+                </div>
+            </div>
+            <div class="your-answer">
+                <label>Your answer (type key points for your own reference):</label>
+                <textarea placeholder="Structure your answer... mention patterns, trade-offs, real examples from your experience..." rows="6"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="revealEvaluation()">&#x1F4A1; Show Expected Answer</button>
+                <button class="btn" style="background:#8b5cf622;color:#a78bfa;border:1px solid #8b5cf6;" onclick="revealNatural()">&#x1F5E3; How to Answer Naturally</button>
+                <button class="btn btn-secondary" onclick="skipQuestion()">Skip &rarr;</button>
+            </div>
+            <div class="natural-answer" id="naturalAnswer">
+                <div class="natural-header">&#x1F5E3; How a strong candidate actually speaks this</div>
+                <div class="natural-body">${q.naturalAnswer || '<em>Natural answer coming soon...</em>'}</div>
+            </div>
+            <div class="evaluation" id="evaluation">
+                <div class="eval-header expected">&#x2705; What a strong answer includes:</div>
+                <div class="eval-body">${q.expected}</div>
+            </div>
+            <div class="self-rate" id="selfRate">
+                <p>How would the interviewer rate this answer?</p>
+                <div class="rate-btns">
+                    <button class="rate-btn strong" onclick="rate('strong')">&#x1F4AA; Strong Hire</button>
+                    <button class="rate-btn okay" onclick="rate('okay')">&#x1F7E1; On The Fence</button>
+                    <button class="rate-btn weak" onclick="rate('weak')">&#x274C; Weak Answer</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function revealEvaluation() {
+        document.getElementById('evaluation').classList.add('visible');
+        document.getElementById('selfRate').classList.add('visible');
+    }
+
+    function revealNatural() {
+        document.getElementById('naturalAnswer').classList.add('visible');
+    }
+
+    function skipQuestion() {
+        rate('skipped');
+    }
+
+    function rate(rating) {
+        scores.push({ round: currentRound, question: currentQuestion, rating });
+        currentQuestion++;
+
+        if (currentQuestion >= rounds[currentRound].questions.length) {
+            // Round complete
+            currentRound++;
+            if (currentRound >= rounds.length) {
+                showFinalResults();
+            } else {
+                showRoundIntro();
+            }
+        } else {
+            showQuestion();
+        }
+    }
+
+    function updateProgress() {
+        const totalQuestions = rounds.reduce((sum, r) => sum + r.questions.length, 0);
+        const answered = scores.length;
+        document.getElementById('progressFill').style.width = (answered / totalQuestions * 100) + '%';
+    }
+
+    function showFinalResults() {
+        stopTimer();
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const mins = Math.floor(elapsed / 60);
+        
+        const totalQ = scores.length;
+        const strong = scores.filter(s => s.rating === 'strong').length;
+        const okay = scores.filter(s => s.rating === 'okay').length;
+        const weak = scores.filter(s => s.rating === 'weak').length;
+        const skipped = scores.filter(s => s.rating === 'skipped').length;
+        
+        const percentage = Math.round((strong / totalQ) * 100);
+        let verdict, verdictColor;
+        if (percentage >= 70) { verdict = 'Strong Hire! You demonstrated senior-level depth.'; verdictColor = 'var(--green-light)'; }
+        else if (percentage >= 45) { verdict = 'Leaning Hire. Some areas need more depth for a senior role.'; verdictColor = 'var(--orange)'; }
+        else { verdict = 'More preparation needed. Focus on the weak areas below.'; verdictColor = '#ff7b72'; }
+
+        // Per-round breakdown
+        let roundBreakdown = '';
+        rounds.forEach((round, idx) => {
+            const roundScores = scores.filter(s => s.round === idx);
+            const roundStrong = roundScores.filter(s => s.rating === 'strong').length;
+            roundBreakdown += `
+                <div class="round-score">
+                    <div class="rs-label">${round.name}</div>
+                    <div class="rs-value" style="color: ${roundStrong >= round.questions.length * 0.6 ? 'var(--green-light)' : 'var(--orange)'};">${roundStrong}/${round.questions.length}</div>
+                </div>`;
+        });
+
+        // Feedback per weak answer
+        let feedback = '';
+        const weakAnswers = scores.filter(s => s.rating === 'weak' || s.rating === 'skipped');
+        if (weakAnswers.length > 0) {
+            feedback = `<h3 style="margin: 24px 0 12px; font-size:1.1em;">&#x1F4DD; Areas to Review:</h3><ul class="feedback-list">`;
+            weakAnswers.forEach(s => {
+                const q = rounds[s.round].questions[s.question];
+                feedback += `<li><span style="color:#ff7b72;">&#x25CF;</span><span><strong>${rounds[s.round].name}</strong>: ${q.q.substring(0, 80)}...</span></li>`;
+            });
+            feedback += '</ul>';
+        }
+
+        document.getElementById('content').innerHTML = '';
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('results').innerHTML = `
+            <h2>Interview Debrief</h2>
+            <div class="verdict">
+                <div class="score-big" style="color:${verdictColor};">${percentage}%</div>
+                <div class="verdict-text">${verdict}</div>
+                <p style="color:var(--text-dim); font-size:0.85em; margin-top:8px;">Time: ${mins} minutes | ${totalQ} questions</p>
+            </div>
+            <div class="round-scores">${roundBreakdown}</div>
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px;">
+                <div style="display:flex; justify-content:space-around; text-align:center;">
+                    <div><div style="font-size:1.5em; color:var(--green-light);">${strong}</div><div style="font-size:0.8em; color:var(--text-muted);">Strong</div></div>
+                    <div><div style="font-size:1.5em; color:var(--orange);">${okay}</div><div style="font-size:0.8em; color:var(--text-muted);">Partial</div></div>
+                    <div><div style="font-size:1.5em; color:#ff7b72;">${weak}</div><div style="font-size:0.8em; color:var(--text-muted);">Weak</div></div>
+                    <div><div style="font-size:1.5em; color:var(--text-dim);">${skipped}</div><div style="font-size:0.8em; color:var(--text-muted);">Skipped</div></div>
+                </div>
+            </div>
+            ${feedback}
+            <button class="retry-btn" onclick="restart()">&#x1F504; Retry Interview</button>
+        `;
+        document.getElementById('results').classList.add('visible');
+    }
+
+    function restart() {
+        currentRound = 0; currentQuestion = 0; scores = [];
+        document.getElementById('results').classList.remove('visible');
+        document.getElementById('results').innerHTML = '';
+        startTimer();
+        showRoundIntro();
+    }
+
+    // Theme
+    if (localStorage.getItem('study-theme') === 'light') document.body.classList.add('light');
+
+    // Init
+    startTimer();
+    showRoundIntro();
+    </script>
+</body>
+</html>

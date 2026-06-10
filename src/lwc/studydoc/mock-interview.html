@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Mock Interview - Salesforce Developer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0d1117; --bg-card: #161b22; --border: #30363d;
+            --text: #e6edf3; --text-muted: #8b949e; --text-dim: #484f58;
+            --blue: #58a6ff; --green: #238636; --purple: #bc8cff;
+            --orange: #f0883e; --red: #da3633; --green-light: #7ee787;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Top bar */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 20px; background: var(--bg-card);
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50;
+        }
+        .topbar a { color: var(--text-muted); text-decoration: none; font-size: 1.3em; }
+        .topbar a:hover { color: var(--blue); }
+        .topbar .title { font-weight: 600; font-size: 1em; color: var(--text); }
+        .topbar .score { font-size: 0.85em; color: var(--text-muted); }
+        .topbar .score strong { color: var(--green-light); }
+
+        /* Main container */
+        .container { max-width: 800px; margin: 0 auto; padding: 24px 16px 100px; }
+
+        /* Progress */
+        .progress-bar { width: 100%; height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); transition: width 0.4s ease; border-radius: 2px; }
+
+        /* Question card */
+        .question-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 28px 24px; margin-bottom: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .q-number { background: var(--blue); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; }
+        .q-topic { background: #21262d; border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 0.75em; color: var(--text-muted); }
+        .q-difficulty { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 600; }
+        .q-difficulty.easy { background: #23863622; color: var(--green-light); border: 1px solid #238636; }
+        .q-difficulty.medium { background: #d2992222; color: var(--orange); border: 1px solid #d29922; }
+        .q-difficulty.hard { background: #da363322; color: #ff7b72; border: 1px solid var(--red); }
+
+        .q-text { font-size: 1.15em; line-height: 1.7; margin-bottom: 20px; font-weight: 500; }
+
+        /* Answer area */
+        .answer-area { margin-top: 16px; }
+        .answer-textarea {
+            width: 100%; min-height: 100px; padding: 14px;
+            background: #0d1117; border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text); font-size: 0.95em;
+            font-family: inherit; resize: vertical; outline: none;
+            transition: border-color 0.2s;
+        }
+        .answer-textarea:focus { border-color: var(--blue); }
+        .answer-textarea::placeholder { color: var(--text-dim); }
+
+        /* Reveal button */
+        .reveal-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--blue); color: #fff; border: none;
+            padding: 14px 28px; border-radius: 10px; font-size: 1em;
+            font-weight: 600; cursor: pointer; margin-top: 16px;
+            transition: all 0.2s; width: 100%;
+            justify-content: center;
+        }
+        .reveal-btn:hover { background: #79c0ff; transform: translateY(-1px); }
+        .reveal-btn:active { transform: scale(0.97); }
+        .reveal-btn:disabled { background: #21262d; color: var(--text-dim); cursor: not-allowed; transform: none; }
+
+        /* Model answer */
+        .model-answer {
+            margin-top: 20px; padding: 20px; background: #0d1117;
+            border: 1px solid var(--green); border-radius: 12px;
+            display: none; animation: slideDown 0.3s ease;
+        }
+        .model-answer.visible { display: block; }
+        .model-answer h4 { color: var(--green-light); margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; }
+        .model-answer p { font-size: 0.95em; line-height: 1.7; color: var(--text); }
+        .model-answer code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; color: #79c0ff; font-family: 'Cascadia Code', 'Fira Code', monospace; }
+        .model-answer pre {
+            background: var(--bg-card); padding: 14px; border-radius: 8px;
+            overflow-x: auto; margin: 10px 0; border: 1px solid var(--border);
+            font-size: 0.82em; line-height: 1.5;
+        }
+        .model-answer ul { padding-left: 18px; margin: 8px 0; }
+        .model-answer li { margin: 4px 0; font-size: 0.92em; line-height: 1.5; }
+        .model-answer .key-points { margin-top: 12px; padding: 12px; background: var(--bg-card); border-radius: 8px; border-left: 3px solid var(--orange); }
+        .model-answer .key-points h5 { color: var(--orange); font-size: 0.8em; text-transform: uppercase; margin-bottom: 6px; }
+
+        /* Self-rating */
+        .self-rate { display: none; margin-top: 16px; text-align: center; animation: fadeIn 0.3s ease; }
+        .self-rate.visible { display: block; }
+        .self-rate p { font-size: 0.9em; color: var(--text-muted); margin-bottom: 12px; }
+        .rate-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .rate-btn {
+            padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text); cursor: pointer;
+            font-size: 0.9em; font-weight: 500; transition: all 0.2s;
+            min-width: 100px;
+        }
+        .rate-btn:hover { border-color: var(--blue); transform: translateY(-2px); }
+        .rate-btn:active { transform: scale(0.95); }
+        .rate-btn.nailed { border-color: var(--green); color: var(--green-light); }
+        .rate-btn.nailed:hover { background: #23863622; }
+        .rate-btn.partial { border-color: var(--orange); color: var(--orange); }
+        .rate-btn.partial:hover { background: #d2992222; }
+        .rate-btn.missed { border-color: var(--red); color: #ff7b72; }
+        .rate-btn.missed:hover { background: #da363322; }
+
+        /* Topic filter */
+        .filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-muted); cursor: pointer;
+            font-size: 0.82em; transition: all 0.2s;
+        }
+        .filter-btn:hover { border-color: var(--blue); color: var(--text); }
+        .filter-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+        /* Results */
+        .results { display: none; text-align: center; animation: fadeIn 0.5s ease; }
+        .results.visible { display: block; }
+        .results h2 { font-size: 1.8em; margin-bottom: 16px; background: linear-gradient(90deg, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .results .score-big { font-size: 3em; font-weight: 700; color: var(--green-light); }
+        .results .breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+        .results .breakdown .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .results .breakdown .stat-num { font-size: 1.8em; font-weight: 700; }
+        .results .breakdown .stat-label { font-size: 0.8em; color: var(--text-muted); margin-top: 4px; }
+        .results .retry-btn { margin-top: 24px; padding: 14px 32px; background: var(--blue); color: #fff; border: none; border-radius: 10px; font-size: 1em; font-weight: 600; cursor: pointer; }
+        .results .retry-btn:hover { background: #79c0ff; }
+
+        /* Light theme */
+        body.light { --bg: #fff; --bg-card: #f6f8fa; --border: #d1d9e0; --text: #1f2328; --text-muted: #6e7781; --text-dim: #8c959f; --blue: #0550ae; --green: #1a7f37; --purple: #6639ba; --orange: #953800; --red: #cf222e; --green-light: #1a7f37; }
+        body.light .answer-textarea { background: #fff; }
+        body.light .model-answer { background: #f6f8fa; border-color: #1a7f37; }
+        body.light .model-answer pre { background: #fff; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 2000px; } }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .container { padding: 16px 12px 80px; }
+            .question-card { padding: 20px 16px; }
+            .q-text { font-size: 1.05em; }
+            .rate-btns { flex-direction: column; }
+            .rate-btn { width: 100%; }
+            .results .breakdown { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" title="Home">&#x1F3E0;</a>
+        <span class="title">Mock Interview</span>
+        <span class="score" id="scoreDisplay">Score: <strong>0</strong>/0</span>
+    </div>
+
+    <div class="container">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+        <div class="filters" id="filters">
+            <button class="filter-btn active" data-topic="all" onclick="setFilter('all')">All Topics</button>
+            <button class="filter-btn" data-topic="lwc" onclick="setFilter('lwc')">&#x26A1; LWC</button>
+            <button class="filter-btn" data-topic="apex" onclick="setFilter('apex')">&#x2615; Apex</button>
+            <button class="filter-btn" data-topic="flow" onclick="setFilter('flow')">&#x1F504; Flow</button>
+            <button class="filter-btn" data-topic="integration" onclick="setFilter('integration')">&#x1F517; Integration</button>
+        </div>
+
+        <div id="questionArea"></div>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+    const allQuestions = [
+        // === LWC Questions ===
+        {
+            topic: 'lwc', difficulty: 'easy',
+            question: 'What is the difference between @api, @track, and reactive properties in LWC?',
+            answer: `<p><strong>@api</strong> &mdash; Public property. Parent can set it. Changes from parent trigger re-render. Read-only from parent's perspective (child can modify internally but shouldn't).</p>
+<p><strong>@track</strong> &mdash; Was needed pre-Spring '20 for deep object tracking. Now <strong>deprecated in practice</strong> because all fields are reactive by default. Only needed if you want to track deep mutations on objects/arrays (rare).</p>
+<p><strong>Reactive (no decorator)</strong> &mdash; Any class field is automatically reactive. Reassigning it triggers re-render. But object/array <em>mutations</em> (like push) do NOT trigger re-render &mdash; you need a new reference: <code>this.items = [...this.items, newItem]</code>.</p>
+<div class="key-points"><h5>Interview Tip</h5><p>Mention that @track is legacy, all fields are reactive since Spring '20, and @api is for parent-child communication (public API surface).</p></div>`
+        },
+        {
+            topic: 'lwc', difficulty: 'medium',
+            question: 'Explain the LWC component lifecycle hooks in order. When would you use each one?',
+            answer: `<p>Lifecycle order:</p>
+<ul>
+<li><strong>constructor()</strong> &mdash; Called first. Don't access DOM. Don't inspect child elements. Call <code>super()</code> first. Set initial state.</li>
+<li><strong>connectedCallback()</strong> &mdash; Component inserted into DOM. Safe for: fetch data, subscribe to events, add event listeners. Fires parent-first (parent before child).</li>
+<li><strong>renderedCallback()</strong> &mdash; After every render. Careful: can cause infinite loops! Use a flag (<code>hasRendered</code>) for one-time DOM operations. Fires child-first.</li>
+<li><strong>disconnectedCallback()</strong> &mdash; Removed from DOM. Clean up: unsubscribe, remove listeners, cancel timeouts.</li>
+<li><strong>errorCallback(error, stack)</strong> &mdash; Catches errors from child components (error boundary). Only in the PARENT. Not for self-errors.</li>
+</ul>
+<div class="key-points"><h5>Key Insight</h5><p>connectedCallback fires parent→child (top-down), renderedCallback fires child→parent (bottom-up). This matters for DOM access timing.</p></div>`
+        },
+        {
+            topic: 'lwc', difficulty: 'hard',
+            question: 'How does Shadow DOM work in LWC? What is the difference between native shadow and synthetic shadow? When would you use Light DOM?',
+            answer: `<p><strong>Shadow DOM</strong> encapsulates a component's internal DOM tree. Styles don't leak in/out. External JS can't reach inside via <code>querySelector</code>.</p>
+<p><strong>Native Shadow</strong> (default since Spring '23): Uses the browser's native Shadow DOM API. Strictest encapsulation. <code>::slotted</code> pseudo-element works. Third-party CSS frameworks CANNOT style internals.</p>
+<p><strong>Synthetic Shadow</strong> (legacy): LWC's polyfill before native support. Less strict &mdash; some CSS could leak. Being phased out.</p>
+<p><strong>Light DOM</strong> (<code>static renderMode = 'light'</code>): No shadow boundary at all. Component renders directly into parent DOM. Use cases:</p>
+<ul>
+<li>SEO-critical content (Experience Cloud / LWR sites)</li>
+<li>Third-party CSS framework integration (Bootstrap, Tailwind)</li>
+<li>Accessibility tools that need DOM traversal</li>
+<li>Scoped Slots (require Light DOM!)</li>
+</ul>
+<pre><code>// Enable Light DOM:
+export default class MyComp extends LightningElement {
+    static renderMode = 'light';
+}</code></pre>
+<div class="key-points"><h5>Trade-off</h5><p>Light DOM = no style encapsulation. Your CSS can bleed into parent/sibling components. Use BEM naming or CSS scope to mitigate.</p></div>`
+        },
+        {
+            topic: 'lwc', difficulty: 'medium',
+            question: 'What are the ways to communicate between LWC components? When do you use each pattern?',
+            answer: `<ul>
+<li><strong>Parent → Child</strong>: <code>@api</code> properties &amp; <code>@api</code> methods. For direct data passing.</li>
+<li><strong>Child → Parent</strong>: Custom Events (<code>this.dispatchEvent(new CustomEvent('update', {detail: data}))</code>). Events bubble by default only to parent unless <code>bubbles: true, composed: true</code>.</li>
+<li><strong>Parent → deep child</strong>: Pass @api down each level (prop drilling) or use LMS.</li>
+<li><strong>Unrelated components (same page)</strong>: <strong>Lightning Message Service (LMS)</strong> &mdash; publish/subscribe via message channels. Works across Aura + LWC + VF on same page.</li>
+<li><strong>Sibling components</strong>: LMS, or parent mediator (child A fires event → parent catches → sets @api on child B).</li>
+<li><strong>Across pages</strong>: URL parameters, platform events, or custom objects.</li>
+</ul>
+<div class="key-points"><h5>Anti-pattern</h5><p>Don't use the old <code>pubsub</code> module (deprecated). Always use LMS for cross-component communication. For same-hierarchy, prefer events over LMS (simpler, no subscription management).</p></div>`
+        },
+        {
+            topic: 'lwc', difficulty: 'hard',
+            question: 'What is the Lightning Data Service (LDS)? How does @wire work with getRecord? What happens to caching?',
+            answer: `<p><strong>Lightning Data Service (LDS)</strong> is a client-side data cache shared across ALL components on the page. When any component updates a record, ALL components displaying that record get fresh data automatically &mdash; no refresh needed.</p>
+<p><strong>@wire(getRecord)</strong>:</p>
+<pre><code>import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import NAME from '@salesforce/schema/Account.Name';
+
+@wire(getRecord, { recordId: '$recordId', fields: [NAME] })
+account;</code></pre>
+<ul>
+<li>Reactive: changing <code>recordId</code> re-fetches automatically ($ prefix = reactive parameter)</li>
+<li>Returns <code>{data, error}</code> object or can use a function handler</li>
+<li>Respects FLS/CRUD automatically</li>
+<li>Cached: subsequent reads hit LDS cache (no server round-trip)</li>
+<li>Shared cache: if component A loads Account.Name and component B loads same record, B uses cache</li>
+</ul>
+<p>To force refresh: <code>notifyRecordUpdateAvailable([{recordId}])</code> (replaces deprecated <code>getRecordNotifyChange</code>).</p>
+<div class="key-points"><h5>Key Point</h5><p>LDS is NOT just a "wire adapter" &mdash; it's a shared normalized cache. Understanding this explains why components auto-update when records change, and why it's better than imperative Apex for simple CRUD.</p></div>`
+        },
+        {
+            topic: 'lwc', difficulty: 'easy',
+            question: 'How do you call Apex from LWC? What is the difference between @wire and imperative calls?',
+            answer: `<p><strong>@wire (declarative)</strong>:</p>
+<pre><code>@wire(getAccounts, { searchKey: '$searchTerm' })
+accounts;</code></pre>
+<ul>
+<li>Automatically calls when reactive params ($) change</li>
+<li>Cached by LDS &mdash; repeated calls return cache</li>
+<li>Cannot control WHEN it fires (reactive)</li>
+<li>Best for: read-only data that depends on parameters</li>
+</ul>
+<p><strong>Imperative (programmatic)</strong>:</p>
+<pre><code>async handleSave() {
+    try {
+        const result = await saveRecord({ record: this.data });
+        // success
+    } catch (error) {
+        // handle error
+    }
+}</code></pre>
+<ul>
+<li>YOU control when it fires (button click, lifecycle hook)</li>
+<li>Required for DML operations (create/update/delete)</li>
+<li>Not cached by default (use <code>cacheable=true</code> for reads only)</li>
+<li>Can pass complex parameters</li>
+</ul>
+<div class="key-points"><h5>Rule of Thumb</h5><p>READ data = @wire. WRITE data = imperative. If you need to refresh wire data after DML, use <code>refreshApex()</code>.</p></div>`
+        },
+        // === APEX Questions ===
+        {
+            topic: 'apex', difficulty: 'easy',
+            question: 'What are Governor Limits in Salesforce? Name the most important ones and how to avoid hitting them.',
+            answer: `<p>Governor Limits exist because Salesforce is <strong>multi-tenant</strong> &mdash; all customers share compute resources. Limits prevent one org from monopolizing resources.</p>
+<p><strong>Critical limits (per transaction):</strong></p>
+<ul>
+<li><strong>100 SOQL queries</strong> (synchronous) / 200 (async)</li>
+<li><strong>50,000 records retrieved</strong> by SOQL</li>
+<li><strong>150 DML statements</strong></li>
+<li><strong>10,000 records processed</strong> by DML</li>
+<li><strong>100 callouts</strong></li>
+<li><strong>10 seconds</strong> CPU time (sync) / 60s (async)</li>
+<li><strong>6 MB heap</strong> (sync) / 12 MB (async)</li>
+</ul>
+<p><strong>How to avoid:</strong></p>
+<ul>
+<li>Bulkify &mdash; never put SOQL/DML inside loops</li>
+<li>Use collections (List, Set, Map) to batch operations</li>
+<li>Use SOQL for-loops for large data sets (chunked 200 records)</li>
+<li>Move heavy work to async (Batch, Queueable, Future)</li>
+<li>Use <code>Limits.getQueries()</code> to monitor at runtime</li>
+</ul>
+<div class="key-points"><h5>Interview Favorite</h5><p>They WILL ask "what happens if you put SOQL in a for loop?" Answer: If trigger handles 200 records, you'd fire 200 queries and hit the 100-query limit immediately.</p></div>`
+        },
+        {
+            topic: 'apex', difficulty: 'medium',
+            question: 'Explain the trigger execution order in Salesforce. What are before and after triggers?',
+            answer: `<p><strong>Execution order (simplified):</strong></p>
+<ol style="padding-left:18px;">
+<li>System validation rules (required fields, field format)</li>
+<li><strong>Before triggers</strong> fire</li>
+<li>Custom validation rules</li>
+<li>Duplicate rules</li>
+<li>Record saved to database (NOT committed yet)</li>
+<li><strong>After triggers</strong> fire</li>
+<li>Assignment rules, auto-response rules</li>
+<li>Workflow rules (legacy)</li>
+<li>Record-triggered flows</li>
+<li>Escalation rules, roll-up summary fields</li>
+<li>Commit to database</li>
+</ol>
+<p><strong>Before triggers</strong>: Modify field values on the SAME record without extra DML. <code>record.Field__c = 'value';</code> &mdash; no <code>update</code> needed.</p>
+<p><strong>After triggers</strong>: Record has an ID. Use for related record operations, callouts (future), or when you need the committed state. Must use DML to update other records.</p>
+<div class="key-points"><h5>Key Insight</h5><p>Before triggers are more efficient for same-record changes (no DML). After triggers are needed for cross-object updates and when you need the auto-generated ID.</p></div>`
+        },
+        {
+            topic: 'apex', difficulty: 'hard',
+            question: 'What are the different types of asynchronous Apex? When would you choose each one?',
+            answer: `<ul>
+<li><strong>Future Methods (@future)</strong>: Simple fire-and-forget. Max 50/transaction. Good for: callouts from triggers, simple async work. Limitation: can't chain, can't monitor, no complex types as params (only primitives + collections of primitives).</li>
+<li><strong>Queueable Apex</strong>: Modern replacement for @future. Supports complex types, can chain jobs (<code>System.enqueueJob()</code> in execute), returns job ID for monitoring. Use for: most async needs, chained operations.</li>
+<li><strong>Batch Apex (Database.Batchable)</strong>: For processing large datasets (millions of records). Three phases: start (query locator), execute (chunks of 200), finish. Has its own governor limits per chunk. Use for: data cleansing, archiving, mass updates.</li>
+<li><strong>Schedulable Apex</strong>: Runs on a CRON schedule. Often wraps a Batch class. Use for: nightly jobs, periodic cleanup. Max 100 scheduled jobs.</li>
+<li><strong>Platform Events</strong>: Publish/subscribe async messaging. Use for: cross-system triggers, decoupled architecture, retry-safe operations.</li>
+</ul>
+<div class="key-points"><h5>Decision Tree</h5><p>Simple one-off → <strong>Queueable</strong>. Large data (10K+) → <strong>Batch</strong>. Needs scheduling → <strong>Schedulable + Batch</strong>. Fire-and-forget callout from trigger → <strong>@future(callout=true)</strong>. Event-driven → <strong>Platform Events</strong>.</p></div>`
+        },
+        {
+            topic: 'apex', difficulty: 'medium',
+            question: 'How do you write test classes in Salesforce? What is the minimum coverage required? What best practices should you follow?',
+            answer: `<p><strong>Minimum coverage:</strong> 75% code coverage to deploy to production. But aim for <strong>90%+</strong> and test actual functionality, not just coverage.</p>
+<p><strong>Key annotations:</strong></p>
+<pre><code>@IsTest
+private class AccountServiceTest {
+    @TestSetup
+    static void setup() {
+        // Create test data ONCE, shared across test methods
+        Account a = new Account(Name='Test');
+        insert a;
+    }
+    
+    @IsTest
+    static void testPositiveCase() {
+        Test.startTest();
+        // Call your method
+        Test.stopTest(); // Forces async to complete
+        // Assert results
+        Assert.areEqual(expected, actual, 'message');
+    }
+}</code></pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Use <code>@TestSetup</code> for shared data (runs once, rolled back per method)</li>
+<li>Test positive, negative, bulk (200+ records), and permission scenarios</li>
+<li><code>Test.startTest()</code> / <code>Test.stopTest()</code> resets governor limits</li>
+<li>Never use <code>seeAllData=true</code> (makes tests org-dependent)</li>
+<li>Use <code>Assert</code> class (not legacy <code>System.assert</code>)</li>
+<li>Use <code>HttpCalloutMock</code> for external callouts</li>
+</ul>
+<div class="key-points"><h5>Common Mistake</h5><p>Testing for coverage, not behavior. Every test should have meaningful Assert statements that verify business logic, not just "it didn't throw an error."</p></div>`
+        },
+        {
+            topic: 'apex', difficulty: 'hard',
+            question: 'What is User Mode in SOQL/DML (Spring \'23+)? How is it different from WITH SECURITY_ENFORCED?',
+            answer: `<p><strong>User Mode (modern approach)</strong>:</p>
+<pre><code>// SOQL in User Mode - respects FLS + CRUD + sharing
+List&lt;Account&gt; accts = [SELECT Name, Revenue__c 
+    FROM Account WITH USER_MODE];
+
+// DML in User Mode
+Database.insert(records, AccessLevel.USER_MODE);</code></pre>
+<p><strong>Behavior</strong>: Strips fields the user can't see (doesn't throw error). Respects sharing rules. Applies CRUD checks.</p>
+<p><strong>WITH SECURITY_ENFORCED (older)</strong>: Throws an exception if ANY field in the query is not accessible. All-or-nothing &mdash; either you get all fields or an error.</p>
+<p><strong>Comparison:</strong></p>
+<ul>
+<li><code>USER_MODE</code> &mdash; Graceful: silently removes inaccessible fields. Recommended for most cases.</li>
+<li><code>SECURITY_ENFORCED</code> &mdash; Strict: throws exception on any inaccessible field. Good for mandatory fields.</li>
+<li><code>SYSTEM_MODE</code> (default) &mdash; God mode: ignores FLS/CRUD. Only for system operations.</li>
+</ul>
+<div class="key-points"><h5>Best Practice</h5><p>Use <code>USER_MODE</code> by default in new code. It's the Salesforce-recommended approach for respecting security without complex Schema.describe checks.</p></div>`
+        },
+        // === FLOW Questions ===
+        {
+            topic: 'flow', difficulty: 'easy',
+            question: 'What are the different types of Flows in Salesforce? When should you use each?',
+            answer: `<ul>
+<li><strong>Screen Flow</strong>: User-facing wizards/forms. Launched from buttons, pages, quick actions. Use for: multi-step data entry, guided processes, custom record creation.</li>
+<li><strong>Record-Triggered Flow</strong>: Replaces Process Builder & Workflow Rules. Fires on record create/update/delete. Has "before-save" (fast, no DML) and "after-save" (for related records) paths.</li>
+<li><strong>Schedule-Triggered Flow</strong>: Runs on a schedule (like batch). Use for: periodic data cleanup, reminders, recurring tasks.</li>
+<li><strong>Platform Event-Triggered Flow</strong>: Fires when a platform event is published. Use for: integration responses, async processing.</li>
+<li><strong>Autolaunched Flow (No Trigger)</strong>: Called from Apex, other flows, or REST API. No UI. Use for: reusable business logic, subflows.</li>
+</ul>
+<div class="key-points"><h5>Interview Tip</h5><p>Always mention that Record-Triggered Flows replace Process Builder (retired 2025) and Workflow Rules (retired 2025). Before-save flows are faster because they don't need DML for same-record field updates.</p></div>`
+        },
+        {
+            topic: 'flow', difficulty: 'medium',
+            question: 'What is the difference between a Before-Save and After-Save Record-Triggered Flow? When do you use each?',
+            answer: `<p><strong>Before-Save Flow:</strong></p>
+<ul>
+<li>Runs BEFORE the record is committed to database</li>
+<li>Can modify fields on the triggering record <strong>without DML</strong> (like before triggers)</li>
+<li>Faster &mdash; no extra DML statement used</li>
+<li>Cannot access the record ID on insert (not assigned yet)</li>
+<li>Cannot create/update/delete OTHER records</li>
+<li>Use for: field auto-population, validation, same-record updates</li>
+</ul>
+<p><strong>After-Save Flow:</strong></p>
+<ul>
+<li>Runs AFTER the record is committed</li>
+<li>Record has an ID</li>
+<li>CAN perform DML on other objects (create child records, update related)</li>
+<li>Can send emails, post to Chatter, make callouts (via async)</li>
+<li>Use for: creating related records, cross-object updates, notifications</li>
+</ul>
+<div class="key-points"><h5>Performance Tip</h5><p>Always prefer before-save for same-record field updates. It's 10x faster than after-save (avoids an extra DML operation). Use after-save only when you NEED the record ID or must touch other records.</p></div>`
+        },
+        {
+            topic: 'flow', difficulty: 'hard',
+            question: 'How do you handle errors in Flows? What happens when a Flow fails in a record-triggered context?',
+            answer: `<p><strong>Error handling in Screen Flows:</strong></p>
+<ul>
+<li>Use <strong>Fault Connectors</strong> on DML/callout elements &mdash; routes to a screen showing error message</li>
+<li>Display <code>{!$Flow.FaultMessage}</code> to user</li>
+<li>Add retry logic or alternative paths</li>
+</ul>
+<p><strong>Error handling in Record-Triggered Flows:</strong></p>
+<ul>
+<li>Unhandled error &mdash; entire transaction rolls back and user sees a generic error</li>
+<li>Add Fault Connector &mdash; you can create a custom error log record, send email, but the original record STILL fails (rolls back)</li>
+<li>Use a <strong>Custom Error element</strong> (Spring '23) to show user-friendly error messages</li>
+</ul>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Always add fault paths on every DML/callout element</li>
+<li>Log errors to a custom object (Error_Log__c) in a SEPARATE transaction (Platform Event)</li>
+<li>For critical flows, use a Pause element + retry pattern</li>
+<li>Test flows with invalid data to verify error paths work</li>
+</ul>
+<div class="key-points"><h5>Key Gotcha</h5><p>In record-triggered flows, an unhandled error rolls back THE ENTIRE TRANSACTION &mdash; including the user's original save. Always add fault connectors to prevent mysterious "An unhandled fault has occurred" errors for users.</p></div>`
+        },
+        // === INTEGRATION Questions ===
+        {
+            topic: 'integration', difficulty: 'easy',
+            question: 'What are Named Credentials in Salesforce? Why should you always use them?',
+            answer: `<p><strong>Named Credentials</strong> store endpoint URL + authentication in a metadata record, so your code never contains secrets.</p>
+<pre><code>// Without Named Credentials (BAD - hardcoded!)
+req.setEndpoint('https://api.example.com/v1/data');
+req.setHeader('Authorization', 'Bearer ' + hardcodedToken);
+
+// With Named Credentials (GOOD!)
+req.setEndpoint('callout:My_External_API/v1/data');
+// Auth header is auto-injected by Salesforce!</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Secrets never in code (passes security review)</li>
+<li>Admins can rotate credentials without code changes</li>
+<li>Supports OAuth 2.0 auto-refresh, JWT, Password, AWS Sig V4</li>
+<li>Per-user or per-org authentication</li>
+<li>Works in sandboxes (different creds per env)</li>
+<li>Required for managed packages (AppExchange)</li>
+</ul>
+<div class="key-points"><h5>Security Rule</h5><p>NEVER hardcode API keys, tokens, or passwords in Apex. This is a security review failure and an OWASP vulnerability. Named Credentials + External Credentials (new) is the only acceptable pattern.</p></div>`
+        },
+        {
+            topic: 'integration', difficulty: 'medium',
+            question: 'Explain the difference between REST and SOAP APIs in Salesforce. When would you use each?',
+            answer: `<p><strong>REST API:</strong></p>
+<ul>
+<li>Lightweight, JSON-based (or XML)</li>
+<li>Uses standard HTTP methods (GET, POST, PATCH, DELETE)</li>
+<li>Stateless &mdash; each call is independent</li>
+<li>Best for: mobile apps, web apps, modern integrations, CRUD operations</li>
+<li>Salesforce REST: <code>/services/data/vXX.0/sobjects/Account/</code></li>
+</ul>
+<p><strong>SOAP API:</strong></p>
+<ul>
+<li>XML-based with WSDL contract</li>
+<li>Heavier payload, strict typing</li>
+<li>Supports WS-Security, transactions</li>
+<li>Best for: enterprise systems (SAP, Oracle), when WSDL is required, metadata operations</li>
+<li>Salesforce SOAP: Enterprise WSDL or Partner WSDL</li>
+</ul>
+<p><strong>Other Salesforce APIs:</strong></p>
+<ul>
+<li><strong>Bulk API</strong> &mdash; large data volumes (millions of records), async</li>
+<li><strong>Streaming API</strong> &mdash; real-time notifications (PushTopic, CDC)</li>
+<li><strong>Pub/Sub API</strong> &mdash; gRPC-based, replaces CometD, high-throughput events</li>
+<li><strong>GraphQL API</strong> &mdash; query exactly what you need, nested relationships</li>
+<li><strong>Composite API</strong> &mdash; multiple operations in one call (reduce round-trips)</li>
+</ul>
+<div class="key-points"><h5>Decision</h5><p>Default to REST for new integrations. Use SOAP only if the external system requires it. Use Bulk API for data migration (50K+ records). Use Pub/Sub API for event-driven real-time integrations.</p></div>`
+        },
+        {
+            topic: 'integration', difficulty: 'hard',
+            question: 'What is the Pub/Sub API? How does it differ from the old CometD/EMP approach? When would you use it?',
+            answer: `<p><strong>Pub/Sub API</strong> is Salesforce's modern gRPC-based event streaming API (2023+). It replaces CometD for external event consumers.</p>
+<p><strong>Key differences from CometD/EMP Connector:</strong></p>
+<ul>
+<li><strong>Protocol</strong>: gRPC (HTTP/2 binary streams) vs CometD (HTTP/1.1 long-polling JSON)</li>
+<li><strong>Direction</strong>: Bidirectional (subscribe AND publish) vs subscribe-only</li>
+<li><strong>Performance</strong>: ~10K+ events/sec vs ~2K events/sec</li>
+<li><strong>Flow control</strong>: Client-managed batch size vs no control (flood risk)</li>
+<li><strong>Replay</strong>: 72h + custom replayId vs 24h only</li>
+<li><strong>Payload</strong>: Avro (compact binary) vs JSON (verbose)</li>
+</ul>
+<p><strong>Use cases:</strong></p>
+<ul>
+<li>External systems subscribing to Platform Events or Change Data Capture</li>
+<li>High-volume event processing (order processing, IoT)</li>
+<li>Reliable event delivery with replay capability</li>
+<li>Bidirectional &mdash; external system can PUBLISH events into Salesforce</li>
+</ul>
+<p><strong>Endpoint:</strong> <code>api.pubsub.salesforce.com:7443</code></p>
+<div class="key-points"><h5>Migration Note</h5><p>EMP Connector still works but Pub/Sub API is the future. New integrations should use Pub/Sub API. Available in Java, Python, Go, Node.js, .NET &mdash; any language with gRPC support.</p></div>`
+        },
+        {
+            topic: 'integration', difficulty: 'medium',
+            question: 'How do you make HTTP callouts from Apex? What are the limits and testing approach?',
+            answer: `<pre><code>public class ExternalService {
+    public static String getData(String endpoint) {
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:MyNamedCred' + endpoint);
+        req.setMethod('GET');
+        req.setTimeout(120000); // Max 120 seconds
+        
+        Http http = new Http();
+        HttpResponse res = http.send(req);
+        
+        if (res.getStatusCode() == 200) {
+            return res.getBody();
+        }
+        throw new CalloutException('Error: ' + res.getStatus());
+    }
+}</code></pre>
+<p><strong>Limits:</strong></p>
+<ul>
+<li>Max <strong>100 callouts</strong> per transaction</li>
+<li>Max <strong>120 second</strong> timeout per callout</li>
+<li>Max <strong>12 MB</strong> response size (6 MB for sync Apex heap)</li>
+<li>No callouts in <strong>before triggers</strong> or after DML in same transaction</li>
+<li>Use <code>@future(callout=true)</code> or Queueable to make callouts from triggers</li>
+</ul>
+<p><strong>Testing:</strong></p>
+<pre><code>@IsTest
+private class ExternalServiceTest {
+    private class MockHttp implements HttpCalloutMock {
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setBody('{"status":"ok"}');
+            res.setStatusCode(200);
+            return res;
+        }
+    }
+    
+    @IsTest
+    static void testCallout() {
+        Test.setMock(HttpCalloutMock.class, new MockHttp());
+        String result = ExternalService.getData('/api/test');
+        Assert.isTrue(result.contains('ok'));
+    }
+}</code></pre>
+<div class="key-points"><h5>Key Rule</h5><p>You CANNOT make real HTTP callouts in tests. Always use <code>HttpCalloutMock</code>. Test both success (200) and failure (4xx/5xx) scenarios.</p></div>`
+        }
+    ];
+
+    // State
+    let currentFilter = 'all';
+    let questions = [];
+    let currentIndex = 0;
+    let scores = { nailed: 0, partial: 0, missed: 0 };
+    let answered = 0;
+
+    function setFilter(topic) {
+        currentFilter = topic;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.topic === topic);
+        });
+        startInterview();
+    }
+
+    function startInterview() {
+        questions = currentFilter === 'all' 
+            ? [...allQuestions].sort(() => Math.random() - 0.5)
+            : allQuestions.filter(q => q.topic === currentFilter).sort(() => Math.random() - 0.5);
+        currentIndex = 0;
+        scores = { nailed: 0, partial: 0, missed: 0 };
+        answered = 0;
+        document.getElementById('results').classList.remove('visible');
+        updateScore();
+        showQuestion();
+    }
+
+    function showQuestion() {
+        if (currentIndex >= questions.length) {
+            showResults();
+            return;
+        }
+
+        const q = questions[currentIndex];
+        const diffClass = q.difficulty;
+        const topicLabels = { lwc: '&#x26A1; LWC', apex: '&#x2615; Apex', flow: '&#x1F504; Flow', integration: '&#x1F517; Integration' };
+        
+        document.getElementById('progressFill').style.width = ((currentIndex) / questions.length * 100) + '%';
+
+        document.getElementById('questionArea').innerHTML = `
+            <div class="question-card">
+                <div class="q-meta">
+                    <span class="q-number">Q${currentIndex + 1} of ${questions.length}</span>
+                    <span class="q-topic">${topicLabels[q.topic]}</span>
+                    <span class="q-difficulty ${diffClass}">${diffClass.charAt(0).toUpperCase() + diffClass.slice(1)}</span>
+                </div>
+                <div class="q-text">${q.question}</div>
+                <div class="answer-area">
+                    <textarea class="answer-textarea" placeholder="Think about your answer... type key points here (optional, for your own reference)" rows="4"></textarea>
+                    <button class="reveal-btn" onclick="revealAnswer()">&#x1F4A1; Show Model Answer</button>
+                </div>
+                <div class="model-answer" id="modelAnswer">${q.answer}</div>
+                <div class="self-rate" id="selfRate">
+                    <p>How did you do?</p>
+                    <div class="rate-btns">
+                        <button class="rate-btn nailed" onclick="rate('nailed')">&#x2705; Nailed It</button>
+                        <button class="rate-btn partial" onclick="rate('partial')">&#x1F7E1; Partial</button>
+                        <button class="rate-btn missed" onclick="rate('missed')">&#x274C; Missed</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function revealAnswer() {
+        document.getElementById('modelAnswer').classList.add('visible');
+        document.getElementById('selfRate').classList.add('visible');
+        document.querySelector('.reveal-btn').disabled = true;
+    }
+
+    function rate(score) {
+        scores[score]++;
+        answered++;
+        currentIndex++;
+        updateScore();
+        showQuestion();
+    }
+
+    function updateScore() {
+        const total = answered;
+        const points = scores.nailed;
+        document.getElementById('scoreDisplay').innerHTML = `Score: <strong>${points}</strong>/${total}`;
+    }
+
+    function showResults() {
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('questionArea').innerHTML = '';
+        document.getElementById('filters').style.display = 'none';
+        
+        const total = questions.length;
+        const percentage = total > 0 ? Math.round((scores.nailed / total) * 100) : 0;
+        let grade = '&#x1F4AA; Keep Practicing';
+        if (percentage >= 80) grade = '&#x1F3C6; Interview Ready!';
+        else if (percentage >= 60) grade = '&#x1F44D; Good Progress';
+        
+        document.getElementById('results').innerHTML = `
+            <h2>Interview Complete!</h2>
+            <div class="score-big">${percentage}%</div>
+            <p style="color:var(--text-muted); margin-top:8px;">${grade}</p>
+            <div class="breakdown">
+                <div class="stat"><div class="stat-num" style="color:var(--green-light);">${scores.nailed}</div><div class="stat-label">&#x2705; Nailed</div></div>
+                <div class="stat"><div class="stat-num" style="color:var(--orange);">${scores.partial}</div><div class="stat-label">&#x1F7E1; Partial</div></div>
+                <div class="stat"><div class="stat-num" style="color:#ff7b72;">${scores.missed}</div><div class="stat-label">&#x274C; Missed</div></div>
+            </div>
+            <button class="retry-btn" onclick="resetInterview()">&#x1F504; Try Again</button>
+        `;
+        document.getElementById('results').classList.add('visible');
+    }
+
+    function resetInterview() {
+        document.getElementById('filters').style.display = 'flex';
+        document.getElementById('results').classList.remove('visible');
+        startInterview();
+    }
+
+    // Theme
+    function toggleTheme() {
+        const isLight = document.body.classList.toggle('light');
+        localStorage.setItem('study-theme', isLight ? 'light' : 'dark');
+    }
+    if (localStorage.getItem('study-theme') === 'light') document.body.classList.add('light');
+
+    // Init
+    startInterview();
+    </script>
+</body>
+</html>

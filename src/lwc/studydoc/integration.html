@@ -1,0 +1,588 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Integration - Salesforce Study Guide</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body data-page="integration">
+    <div class="mobile-top-bar"></div>
+    <div class="progress" id="progress"></div>
+    <div class="slide-num" id="slideNum"></div>
+    <div class="keys-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or swipe on mobile</div>
+
+    <!-- Home button -->
+    <a href="index.html" class="home-btn" title="Back to Topics">&#x1F3E0;</a>
+
+    <!-- Toolbar -->
+    <div class="toolbar" style="left: 70px;">
+        <button onclick="changeFontSize(-1)" title="Decrease font" aria-label="Decrease font">A-</button>
+        <button onclick="changeFontSize(1)" title="Increase font" aria-label="Increase font">A+</button>
+        <span class="sep"></span>
+        <button onclick="toggleTheme()" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">&#x2600;&#xFE0F;</button>
+    </div>
+
+    <div class="deck" id="deck">
+        <!-- SECTION 11: INTEGRATION -->
+        <!-- ================================================== -->
+
+        <!-- INT SLIDE 1: Introduction -->
+        <div class="slide" data-section="integration">
+            <div class="center">
+                <h1 class="fade-in">Salesforce Integration</h1>
+                <p class="fade-in delay-1" style="font-size: 1.4em; color: #8b949e; margin: 20px 0;">Connecting Salesforce to External Systems</p>
+                <div class="fade-in delay-2" style="margin-top: 30px;">
+                    <span class="badge red">REST API</span>
+                    <span class="badge blue">SOAP API</span>
+                    <span class="badge purple">Callouts</span>
+                    <span class="badge orange">Platform Events</span>
+                    <span class="badge">Named Credentials</span>
+                </div>
+                <p class="fade-in delay-3" style="margin-top: 40px; color: #484f58;">Inbound (external → SF) &amp; Outbound (SF → external) patterns</p>
+            </div>
+        </div>
+
+        <!-- INT SLIDE 2: Integration Patterns Overview -->
+        <div class="slide" data-section="integration">
+            <h2>Integration Patterns — The Big Picture</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Every integration is either Inbound (data coming INTO Salesforce) or Outbound (Salesforce calling OUT). Choose sync vs async based on timing requirements.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Inbound (External → Salesforce)</h3>
+                        <table>
+                            <tr><th>Method</th><th>Use Case</th></tr>
+                            <tr><td><strong>REST API</strong></td><td>External apps CRUD Salesforce records</td></tr>
+                            <tr><td><strong>SOAP API</strong></td><td>Enterprise systems (WSDL-based)</td></tr>
+                            <tr><td><strong>Bulk API</strong></td><td>Load millions of records</td></tr>
+                            <tr><td><strong>Streaming API</strong></td><td>Real-time notifications to subscribers</td></tr>
+                            <tr><td><strong>Composite API</strong></td><td>Multiple operations in one call</td></tr>
+                            <tr><td><strong>Custom REST/SOAP</strong></td><td>Custom Apex endpoints</td></tr>
+                            <tr><td><strong>Platform Events</strong></td><td>Event-driven (publish/subscribe)</td></tr>
+                            <tr><td><strong>Salesforce Connect</strong></td><td>Virtual objects (OData/custom)</td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Outbound (Salesforce → External)</h3>
+                        <table>
+                            <tr><th>Method</th><th>Use Case</th></tr>
+                            <tr><td><strong>HTTP Callout</strong></td><td>Call any REST/SOAP endpoint</td></tr>
+                            <tr><td><strong>Named Credentials</strong></td><td>Secure credential management</td></tr>
+                            <tr><td><strong>External Services</strong></td><td>Declarative (OpenAPI/Swagger)</td></tr>
+                            <tr><td><strong>Outbound Messages</strong></td><td>Workflow-triggered SOAP push</td></tr>
+                            <tr><td><strong>Change Data Capture</strong></td><td>Stream record changes out</td></tr>
+                            <tr><td><strong>Canvas App</strong></td><td>Embed external app in SF</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>Pattern Decision Matrix</h3>
+                        <table>
+                            <tr><th>Need</th><th>Pattern</th></tr>
+                            <tr><td>Real-time, user waits</td><td>Synchronous callout</td></tr>
+                            <tr><td>Fire-and-forget</td><td>@future(callout=true) / Queueable</td></tr>
+                            <tr><td>Batch data sync (nightly)</td><td>Scheduled Batch + HTTP callout</td></tr>
+                            <tr><td>External system pushes to SF</td><td>REST API / Platform Events</td></tr>
+                            <tr><td>SF notifies external on change</td><td>Platform Events / Outbound Msg</td></tr>
+                            <tr><td>Large data volume (millions)</td><td>Bulk API 2.0</td></tr>
+                            <tr><td>Real-time bidirectional</td><td>Streaming API / Pub/Sub API</td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Authentication Methods</h3>
+                        <table>
+                            <tr><th>Method</th><th>Use When</th></tr>
+                            <tr><td><strong>OAuth 2.0 (JWT)</strong></td><td>Server-to-server, no user</td></tr>
+                            <tr><td><strong>OAuth 2.0 (Web Flow)</strong></td><td>User-interactive login</td></tr>
+                            <tr><td><strong>Named Credential</strong></td><td>Best practice for all callouts</td></tr>
+                            <tr><td><strong>Session ID</strong></td><td>Already authenticated user</td></tr>
+                            <tr><td><strong>Connected App</strong></td><td>External app accessing SF API</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INT SLIDE 3: HTTP Callouts -->
+        <div class="slide" data-section="integration">
+            <h2>HTTP Callouts — Calling External APIs from Apex</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Salesforce can call any REST/SOAP endpoint. Always use Named Credentials for security. Remember: no callouts in synchronous triggers.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Basic REST Callout</h3>
+<pre><code>public class ExternalApiService {
+    
+    // ✅ Using Named Credential (BEST PRACTICE)
+    public static String getExternalData(String endpoint) {
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:My_Named_Credential/' + endpoint);
+        req.setMethod('GET');
+        req.setHeader('Content-Type', 'application/json');
+        req.setTimeout(30000); // 30 second timeout
+        
+        Http http = new Http();
+        HttpResponse res = http.send(req);
+        
+        if (res.getStatusCode() == 200) {
+            return res.getBody();
+        } else {
+            throw new CalloutException(
+                'API Error: ' + res.getStatusCode() 
+                + ' ' + res.getBody()
+            );
+        }
+    }
+    
+    // POST with JSON body
+    public static String createExternalRecord(Map&lt;String,Object&gt; payload) {
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:My_Named_Credential/api/records');
+        req.setMethod('POST');
+        req.setHeader('Content-Type', 'application/json');
+        req.setBody(JSON.serialize(payload));
+        
+        Http http = new Http();
+        HttpResponse res = http.send(req);
+        
+        if (res.getStatusCode() == 201) {
+            Map&lt;String,Object&gt; result = (Map&lt;String,Object&gt;) 
+                JSON.deserializeUntyped(res.getBody());
+            return (String) result.get('id');
+        }
+        throw new CalloutException('Create failed: ' + res.getBody());
+    }
+}</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Named Credentials Setup</h3>
+<pre><code>// Named Credential stores:
+// - Endpoint URL (base)
+// - Authentication (OAuth, Basic, etc.)
+// - Certificate (for mutual TLS)
+
+// Setup → Named Credentials → New
+// Label: My External API
+// URL: https://api.example.com
+// Identity Type: Named Principal / Per User
+// Authentication: OAuth 2.0 / Password / JWT
+
+// In Apex — just reference by name:
+req.setEndpoint('callout:My_External_API/v2/accounts');
+// ↑ Framework handles auth headers automatically!
+
+// ⚠️ DON'T hardcode credentials:
+// ❌ req.setHeader('Authorization', 'Bearer ' + token);
+// ✅ Use Named Credential (auto-injects auth)
+
+// Remote Site Settings (if not using Named Cred):
+// Setup → Remote Site Settings → New
+// Must whitelist every external domain</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Callout Rules & Limits</h3>
+                        <table>
+                            <tr><th>Rule</th><th>Detail</th></tr>
+                            <tr><td>Max callouts</td><td>100 per transaction</td></tr>
+                            <tr><td>Max timeout</td><td>120 seconds (sync), 120s (async)</td></tr>
+                            <tr><td>Max response size</td><td>12 MB (heap limit applies)</td></tr>
+                            <tr><td>From triggers?</td><td>❌ No — use @future(callout=true)</td></tr>
+                            <tr><td>From batch?</td><td>✅ Yes — implement Database.AllowsCallouts</td></tr>
+                            <tr><td>After DML?</td><td>❌ No — callout before DML, or use @future</td></tr>
+                        </table>
+                        <p style="margin-top:8px;"><small><strong>Key rule:</strong> You cannot mix DML and callouts in the same transaction. Do callout first, then DML. Or use @future/@Queueable to separate them.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INT SLIDE 4: Custom REST & SOAP APIs -->
+        <div class="slide" data-section="integration">
+            <h2>Custom REST & SOAP APIs — Exposing Salesforce</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Create custom API endpoints in Apex that external systems can call. REST is simpler; SOAP generates a WSDL for enterprise clients.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Custom REST API</h3>
+<pre><code>@RestResource(urlMapping='/accounts/*')
+global with sharing class AccountRestService {
+    
+    @HttpGet
+    global static Account getAccount() {
+        RestRequest req = RestContext.request;
+        // URL: /services/apexrest/accounts/001XX000003ABC
+        String accId = req.requestURI.substringAfterLast('/');
+        return [SELECT Id, Name, Industry, Phone
+                FROM Account WHERE Id = :accId];
+    }
+    
+    @HttpPost
+    global static Id createAccount(String name, String industry) {
+        Account acc = new Account(
+            Name = name, 
+            Industry = industry
+        );
+        insert acc;
+        return acc.Id;
+    }
+    
+    @HttpPut
+    global static Account updateAccount(Id id, String name) {
+        Account acc = [SELECT Id FROM Account WHERE Id = :id];
+        acc.Name = name;
+        update acc;
+        return acc;
+    }
+    
+    @HttpDelete
+    global static void deleteAccount() {
+        RestRequest req = RestContext.request;
+        String accId = req.requestURI.substringAfterLast('/');
+        delete [SELECT Id FROM Account WHERE Id = :accId];
+    }
+}
+
+// External call:
+// GET https://myDomain.my.salesforce.com/services/apexrest/accounts/001XX
+// Headers: Authorization: Bearer &lt;access_token&gt;</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Custom SOAP API (Web Service)</h3>
+<pre><code>global class AccountSoapService {
+    
+    webService static Account getAccountById(Id accountId) {
+        return [SELECT Id, Name, Industry 
+                FROM Account WHERE Id = :accountId];
+    }
+    
+    webService static Id createAccount(String name) {
+        Account acc = new Account(Name = name);
+        insert acc;
+        return acc.Id;
+    }
+}
+
+// Enterprise client:
+// 1. Generate WSDL: Setup → Apex Classes → WSDL
+// 2. Client imports WSDL, generates proxy classes
+// 3. Calls methods like local functions</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>REST vs SOAP — Which to Build</h3>
+                        <table>
+                            <tr><th>Feature</th><th>REST (@RestResource)</th><th>SOAP (webService)</th></tr>
+                            <tr><td>Format</td><td>JSON (lightweight)</td><td>XML (verbose)</td></tr>
+                            <tr><td>Discovery</td><td>Documentation</td><td>WSDL (auto)</td></tr>
+                            <tr><td>Multiple methods</td><td>1 per HTTP verb per class</td><td>Unlimited per class</td></tr>
+                            <tr><td>Modern clients</td><td>✅ Preferred</td><td>Legacy systems</td></tr>
+                            <tr><td>Bulk data</td><td>Better (streaming)</td><td>Heavy (XML overhead)</td></tr>
+                            <tr><td>Error handling</td><td>HTTP status codes</td><td>SOAP faults</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INT SLIDE 5: Platform Events -->
+        <div class="slide" data-section="integration">
+            <h2>Platform Events — Event-Driven Architecture</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Platform Events enable loosely-coupled, real-time communication between Salesforce and external systems. Publish/Subscribe pattern — producers don't know consumers.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Define & Publish Events</h3>
+<pre><code>// 1. Define: Setup → Platform Events → New
+// Name: Order_Status__e (__e = event suffix)
+// Fields: Order_Id__c (Text), Status__c (Text), 
+//         Amount__c (Number)
+
+// 2. Publish from Apex:
+Order_Status__e event = new Order_Status__e(
+    Order_Id__c = order.Id,
+    Status__c = 'Shipped',
+    Amount__c = order.Total_Amount__c
+);
+Database.SaveResult sr = EventBus.publish(event);
+
+if (sr.isSuccess()) {
+    System.debug('Event published: ' + sr.getId());
+} else {
+    System.debug('Error: ' + sr.getErrors()[0].getMessage());
+}
+
+// Publish multiple events (bulkified):
+List&lt;Order_Status__e&gt; events = new List&lt;Order_Status__e&gt;();
+for (Order ord : orders) {
+    events.add(new Order_Status__e(
+        Order_Id__c = ord.Id,
+        Status__c = ord.Status
+    ));
+}
+List&lt;Database.SaveResult&gt; results = EventBus.publish(events);
+
+// Publish from Flow:
+// Create Records element → Object: Order_Status__e</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Subscribe to Events</h3>
+<pre><code>// Subscribe in Apex Trigger:
+trigger OrderStatusTrigger on Order_Status__e (after insert) {
+    List&lt;Task&gt; tasks = new List&lt;Task&gt;();
+    for (Order_Status__e event : Trigger.new) {
+        if (event.Status__c == 'Shipped') {
+            tasks.add(new Task(
+                Subject = 'Follow up: Order shipped',
+                WhatId = event.Order_Id__c,
+                ActivityDate = Date.today().addDays(3)
+            ));
+        }
+    }
+    insert tasks;
+}
+
+// Subscribe in LWC (EMP API):
+import { subscribe } from 'lightning/empApi';
+subscribe('/event/Order_Status__e', -1, (message) => {
+    const payload = message.data.payload;
+    this.updateOrderStatus(payload.Order_Id__c, payload.Status__c);
+});
+
+// Subscribe from External (CometD / Pub/Sub API):
+// gRPC-based Pub/Sub API (modern)
+// /event/Order_Status__e channel</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Platform Events vs Change Data Capture</h3>
+                        <table>
+                            <tr><th>Feature</th><th>Platform Events</th><th>Change Data Capture</th></tr>
+                            <tr><td>What it does</td><td>Custom event bus</td><td>Auto-publishes on record change</td></tr>
+                            <tr><td>Schema</td><td>You define fields</td><td>Auto from object fields</td></tr>
+                            <tr><td>Published by</td><td>Your code/flow</td><td>Salesforce automatically</td></tr>
+                            <tr><td>Use case</td><td>Business events</td><td>Sync record changes</td></tr>
+                            <tr><td>Replay</td><td>72 hours</td><td>72 hours</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INT SLIDE 6: Integration Best Practices & Patterns -->
+        <div class="slide" data-section="integration">
+            <h2>Integration Best Practices & Error Handling</h2>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Retry Pattern with Error Logging</h3>
+<pre><code>public class IntegrationService {
+    private static final Integer MAX_RETRIES = 3;
+    
+    public static HttpResponse callWithRetry(HttpRequest req) {
+        HttpResponse res;
+        Integer retryCount = 0;
+        
+        while (retryCount < MAX_RETRIES) {
+            try {
+                Http h = new Http();
+                res = h.send(req);
+                
+                if (res.getStatusCode() == 200 || 
+                    res.getStatusCode() == 201) {
+                    return res; // Success!
+                }
+                
+                // 5xx = server error, retry
+                if (res.getStatusCode() >= 500) {
+                    retryCount++;
+                    continue;
+                }
+                
+                // 4xx = client error, don't retry
+                break;
+                
+            } catch (CalloutException e) {
+                retryCount++;
+                if (retryCount >= MAX_RETRIES) {
+                    logError('Callout failed after retries', e);
+                    throw e;
+                }
+            }
+        }
+        
+        logError('API returned: ' + res.getStatusCode(), null);
+        return res;
+    }
+    
+    private static void logError(String msg, Exception e) {
+        Integration_Log__c log = new Integration_Log__c(
+            Message__c = msg,
+            Stack_Trace__c = e != null ? e.getStackTraceString() : '',
+            Timestamp__c = Datetime.now()
+        );
+        insert log;
+    }
+}</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Mock Callouts for Testing</h3>
+<pre><code>// Implement HttpCalloutMock for unit tests
+@IsTest
+global class MockHttpResponse implements HttpCalloutMock {
+    global HttpResponse respond(HttpRequest req) {
+        HttpResponse res = new HttpResponse();
+        res.setHeader('Content-Type', 'application/json');
+        res.setBody('{"id": "ext-123", "status": "created"}');
+        res.setStatusCode(201);
+        return res;
+    }
+}
+
+// In test method:
+@IsTest
+static void testCreateExternalRecord() {
+    Test.setMock(HttpCalloutMock.class, new MockHttpResponse());
+    
+    Test.startTest();
+    String extId = ExternalApiService.createExternalRecord(
+        new Map&lt;String,Object&gt;{ 'name' => 'Test' }
+    );
+    Test.stopTest();
+    
+    System.assertEquals('ext-123', extId);
+}
+
+// Multi-callout mock (different responses per endpoint):
+global class MultiMock implements HttpCalloutMock {
+    global HttpResponse respond(HttpRequest req) {
+        if (req.getEndpoint().contains('/auth')) {
+            // Return token
+        } else if (req.getEndpoint().contains('/data')) {
+            // Return data
+        }
+    }
+}</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Integration Checklist</h3>
+                        <ul>
+                            <li>✅ <strong>Named Credentials</strong> — never hardcode secrets</li>
+                            <li>✅ <strong>Error handling</strong> — log failures, retry transients</li>
+                            <li>✅ <strong>Timeout handling</strong> — set appropriate timeouts</li>
+                            <li>✅ <strong>Bulkify</strong> — batch records in callout body</li>
+                            <li>✅ <strong>Idempotency</strong> — safe to retry (use external IDs)</li>
+                            <li>✅ <strong>Rate limiting</strong> — respect external API limits</li>
+                            <li>✅ <strong>Mock tests</strong> — 100% testable with HttpCalloutMock</li>
+                            <li>✅ <strong>Monitoring</strong> — custom object for integration logs</li>
+                            <li>✅ <strong>Circuit breaker</strong> — stop calling if endpoint is down</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- SLIDE: Pub/Sub API (gRPC) -->
+        <div class="slide" data-section="integration">
+            <h2>Pub/Sub API &mdash; gRPC-Based Event Streaming (2023+)</h2>
+            <p style="color:#8b949e; margin-bottom:8px;">The modern replacement for CometD (EMP Connector) for subscribing to and publishing platform events at scale.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; overflow-y:auto;">
+                <div style="background:#161b22; padding:14px; border-radius:8px; border-left:3px solid #58a6ff;">
+                    <h3 style="color:#58a6ff; margin-bottom:8px;">What Is Pub/Sub API?</h3>
+                    <ul style="font-size:13px; line-height:1.6;">
+                        <li><strong>Protocol:</strong> gRPC (binary, HTTP/2) &mdash; faster and more efficient than CometD (JSON/long-polling)</li>
+                        <li><strong>Replaces:</strong> EMP Connector / CometD for external subscribers</li>
+                        <li><strong>Supports:</strong> Platform Events, Change Data Capture (CDC), Custom Channels</li>
+                        <li><strong>Features:</strong> Bidirectional streaming, flow control, custom replayId management</li>
+                        <li><strong>Auth:</strong> OAuth 2.0 (same as REST/SOAP), uses session token or JWT</li>
+                        <li><strong>Endpoint:</strong> api.pubsub.salesforce.com:7443</li>
+                        <li><strong>Languages:</strong> Java, Python, Go, Node.js, .NET (any gRPC-supported language)</li>
+                    </ul>
+                    <div style="margin-top:10px; padding:8px; background:#0d1117; border-radius:6px;">
+                        <strong style="color:#7ee787; font-size:12px;">CometD vs Pub/Sub API Comparison:</strong>
+                        <table style="font-size:12px; margin-top:6px;">
+                            <tr><th>Feature</th><th>CometD (Legacy)</th><th>Pub/Sub API</th></tr>
+                            <tr><td>Protocol</td><td>HTTP/1.1 long-polling</td><td>gRPC (HTTP/2 streams)</td></tr>
+                            <tr><td>Payload</td><td>JSON</td><td>Avro (binary, compact)</td></tr>
+                            <tr><td>Direction</td><td>Subscribe only</td><td>Subscribe + Publish</td></tr>
+                            <tr><td>Flow control</td><td>None (flood risk)</td><td>Client-managed batches</td></tr>
+                            <tr><td>Performance</td><td>~2K events/sec</td><td>~10K+ events/sec</td></tr>
+                            <tr><td>Replay</td><td>24h window only</td><td>72h + custom replayId</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div style="background:#161b22; padding:14px; border-radius:8px; border-left:3px solid #f0883e;">
+                    <h3 style="color:#f0883e; margin-bottom:8px;">Subscribe Example (Python)</h3>
+<pre><code class="language-python">import grpc
+from pubsub_api_pb2_grpc import PubSubStub
+from pubsub_api_pb2 import (
+    FetchRequest, TopicInfo, ReplayPreset
+)
+
+# Connect via gRPC
+channel = grpc.secure_channel(
+    'api.pubsub.salesforce.com:7443',
+    grpc.ssl_channel_credentials()
+)
+stub = PubSubStub(channel)
+
+# Subscribe to platform event
+def fetch_req_stream():
+    while True:
+        yield FetchRequest(
+            topic_name='/event/Order_Event__e',
+            replay_preset=ReplayPreset.LATEST,
+            num_requested=10  # Flow control!
+        )
+
+for event_batch in stub.Subscribe(
+    fetch_req_stream(),
+    metadata=auth_metadata
+):
+    for event in event_batch.events:
+        payload = decode_avro(event.event.payload)
+        process_order(payload)</code></pre>
+                    <h3 style="color:#7ee787; margin-top:12px; margin-bottom:6px;">Publish Example (Apex)</h3>
+<pre><code class="language-java">// Apex still publishes events normally
+// External apps consume via Pub/Sub API
+Order_Event__e evt = new Order_Event__e(
+    Order_Id__c = order.Id,
+    Status__c = 'Confirmed',
+    Amount__c = order.Total_Amount__c
+);
+Database.SaveResult sr =
+    EventBus.publish(evt);
+
+// For external publish (gRPC client):
+// Use stub.Publish() with Avro-encoded payload</code></pre>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- end .deck -->
+
+    <!-- Menu button + Slide Menu -->
+    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" title="Table of Contents">&#x2630;</button>
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="slide-menu" id="slideMenu">
+        <input type="text" class="slide-menu-search" id="menuSearch" placeholder="Search slides..." oninput="filterMenu(this.value)">
+        <div id="menuItems"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <button id="prevBtn" onclick="prevSlide()" aria-label="Previous">&larr; Prev</button>
+        <button id="nextBtn" onclick="nextSlide()" aria-label="Next">Next &rarr;</button>
+    </div>
+
+    <script src="slides.js"></script>
+</body>
+</html>
