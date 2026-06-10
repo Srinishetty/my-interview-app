@@ -1,0 +1,1043 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Apex Programming - Salesforce Study Guide</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body data-page="apex">
+    <div class="mobile-top-bar"></div>
+    <div class="progress" id="progress"></div>
+    <div class="slide-num" id="slideNum"></div>
+    <div class="keys-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or swipe on mobile</div>
+
+    <!-- Home button -->
+    <a href="index.html" class="home-btn" title="Back to Topics">&#x1F3E0;</a>
+
+    <!-- Toolbar -->
+    <div class="toolbar" style="left: 70px;">
+        <button onclick="changeFontSize(-1)" title="Decrease font" aria-label="Decrease font">A-</button>
+        <button onclick="changeFontSize(1)" title="Increase font" aria-label="Increase font">A+</button>
+        <span class="sep"></span>
+        <button onclick="toggleTheme()" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">&#x2600;&#xFE0F;</button>
+    </div>
+
+    <div class="deck" id="deck">
+        <!-- SECTION 8: APEX PROGRAMMING -->
+        <!-- ================================================== -->
+
+        <!-- APEX SLIDE 1: Introduction -->
+        <div class="slide" data-section="apex">
+            <div class="center">
+                <h1 class="fade-in">Apex Programming</h1>
+                <p class="fade-in delay-1" style="font-size: 1.4em; color: #8b949e; margin: 20px 0;">Server-Side Development on Salesforce Platform</p>
+                <div class="fade-in delay-2" style="margin-top: 30px;">
+                    <span class="badge purple" onclick="window.SlideEngine.goToSlide(1)" style="cursor:pointer;">OOP</span>
+                    <span class="badge blue" onclick="window.SlideEngine.goToSlide(2)" style="cursor:pointer;">SOQL/SOSL</span>
+                    <span class="badge" onclick="window.SlideEngine.goToSlide(4)" style="cursor:pointer;">Triggers</span>
+                    <span class="badge orange" onclick="window.SlideEngine.goToSlide(5)" style="cursor:pointer;">Governor Limits</span>
+                    <span class="badge red" onclick="window.SlideEngine.goToSlide(3)" style="cursor:pointer;">DML Operations</span>
+                </div>
+                <p class="fade-in delay-3" style="margin-top: 40px; color: #484f58;">Java-like strongly-typed language that runs on Salesforce servers</p>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 2: Apex Fundamentals -->
+        <div class="slide" data-section="apex">
+            <h2>Apex Fundamentals — What Makes It Different</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Apex looks like Java but runs inside Salesforce. It has built-in database access, automatic governor limits, and is designed for multi-tenant cloud computing.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Key Characteristics</h3>
+                        <table>
+                            <tr><th>Feature</th><th>Description</th></tr>
+                            <tr><td>Strongly Typed</td><td>Compile-time checking, no dynamic types</td></tr>
+                            <tr><td>Multi-tenant</td><td>Shared infrastructure = governor limits</td></tr>
+                            <tr><td>Integrated</td><td>Native SOQL/DML — no ORM needed</td></tr>
+                            <tr><td>Testable</td><td>75% test coverage required for deploy</td></tr>
+                            <tr><td>Versioned</td><td>API version per class (backward compat)</td></tr>
+                            <tr><td>Case Insensitive</td><td><code>Account</code> = <code>ACCOUNT</code> = <code>account</code></td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Data Types</h3>
+<pre><code>// Primitives
+Integer count = 0;
+Decimal price = 19.99;
+String name = 'Hello';
+Boolean isActive = true;
+Date today = Date.today();
+Datetime now = Datetime.now();
+Id recordId = '001XX000003ABC';
+
+// Collections
+List&lt;Account&gt; accts = new List&lt;Account&gt;();
+Set&lt;Id&gt; uniqueIds = new Set&lt;Id&gt;();
+Map&lt;Id, Account&gt; acctMap = new Map&lt;Id, Account&gt;();
+
+// sObject (any Salesforce record)
+Account a = new Account(Name = 'Acme');
+SObject generic = a; // Polymorphic</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Your First Apex Class</h3>
+<pre><code>public with sharing class AccountService {
+    // Instance method
+    public List&lt;Account&gt; getActiveAccounts() {
+        return [SELECT Id, Name, Industry
+                FROM Account 
+                WHERE IsActive__c = true
+                ORDER BY Name
+                LIMIT 100];
+    }
+
+    // Static method (called without instantiation)
+    public static Account createAccount(String name) {
+        Account acc = new Account(Name = name);
+        insert acc;
+        return acc;
+    }
+}
+
+// Usage:
+AccountService svc = new AccountService();
+List&lt;Account&gt; accts = svc.getActiveAccounts();
+
+// Static:
+Account newAcc = AccountService.createAccount('Acme');</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Access Modifiers & Sharing</h3>
+                        <table>
+                            <tr><th>Keyword</th><th>Meaning</th></tr>
+                            <tr><td><code>public</code></td><td>Visible everywhere in namespace</td></tr>
+                            <tr><td><code>private</code></td><td>Visible only in this class</td></tr>
+                            <tr><td><code>global</code></td><td>Visible across namespaces (packages)</td></tr>
+                            <tr><td><code>with sharing</code></td><td>Respects user's record access</td></tr>
+                            <tr><td><code>without sharing</code></td><td>Ignores sharing (admin mode)</td></tr>
+                            <tr><td><code>inherited sharing</code></td><td>Inherits caller's context</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 3: SOQL & SOSL -->
+        <div class="slide" data-section="apex">
+            <h2>SOQL & SOSL — Querying Data</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">SOQL = Salesforce Object Query Language (like SQL for one object + relationships). SOSL = Salesforce Object Search Language (full-text search across multiple objects).</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>SOQL Fundamentals</h3>
+<pre><code>// Basic query
+List&lt;Account&gt; accts = [
+    SELECT Id, Name, Industry, AnnualRevenue
+    FROM Account
+    WHERE Industry = 'Technology'
+    AND AnnualRevenue > 1000000
+    ORDER BY Name ASC
+    LIMIT 50
+    OFFSET 10
+];
+
+// Relationship queries (parent → child)
+List&lt;Account&gt; withContacts = [
+    SELECT Name, 
+        (SELECT FirstName, LastName, Email
+         FROM Contacts
+         WHERE IsActive__c = true)
+    FROM Account
+    WHERE Id IN :accountIds
+];
+
+// Child → parent (dot notation)
+List&lt;Contact&gt; contacts = [
+    SELECT FirstName, Account.Name, Account.Industry
+    FROM Contact
+    WHERE Account.Industry = 'Tech'
+];
+
+// Aggregate queries
+List&lt;AggregateResult&gt; results = [
+    SELECT Industry, COUNT(Id) cnt, SUM(AnnualRevenue) total
+    FROM Account
+    GROUP BY Industry
+    HAVING COUNT(Id) > 5
+];</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>SOSL — Full-Text Search</h3>
+<pre><code>// Search across multiple objects at once
+List&lt;List&lt;SObject&gt;&gt; results = [
+    FIND 'Acme*' IN ALL FIELDS
+    RETURNING 
+        Account(Name, Industry WHERE Industry = 'Tech'),
+        Contact(FirstName, LastName, Email),
+        Opportunity(Name, Amount)
+    LIMIT 20
+];
+List&lt;Account&gt; accts = (List&lt;Account&gt;) results[0];
+List&lt;Contact&gt; contacts = (List&lt;Contact&gt;) results[1];</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Dynamic SOQL (Safe)</h3>
+<pre><code>// Build queries dynamically
+String objectName = 'Account';
+String fields = 'Id, Name, Industry';
+String conditions = 'Industry = :industry';
+
+String query = 'SELECT ' + fields 
+    + ' FROM ' + objectName 
+    + ' WHERE ' + conditions;
+
+// ⚠️ SECURITY: Use bind variables, not concatenation!
+// ✅ Safe: WHERE Name = :userInput
+// ❌ Unsafe: WHERE Name = \'' + userInput + '\''
+// ❌ = SQL Injection vulnerability!
+
+List&lt;Account&gt; results = Database.query(query);</code></pre>
+                    </div>
+                    <div class="card fade-in delay-3">
+                        <h3>SOQL vs SOSL</h3>
+                        <table>
+                            <tr><th>Feature</th><th>SOQL</th><th>SOSL</th></tr>
+                            <tr><td>Objects</td><td>One (+ relationships)</td><td>Multiple at once</td></tr>
+                            <tr><td>Search type</td><td>Exact field match</td><td>Full-text (tokenized)</td></tr>
+                            <tr><td>In triggers</td><td>✅ Yes</td><td>❌ No</td></tr>
+                            <tr><td>Use when</td><td>Know exact object/field</td><td>Global search bar</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 4: DML Operations -->
+        <div class="slide" data-section="apex">
+            <h2>DML Operations — Creating, Updating, Deleting Records</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">DML (Data Manipulation Language) statements persist changes to the database. Always bulkify — operate on lists, not single records.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>6 DML Statements</h3>
+<pre><code>// INSERT — create new records
+Account acc = new Account(Name = 'New Corp');
+insert acc;
+// acc.Id is now populated!
+
+// UPDATE — modify existing records
+acc.Industry = 'Technology';
+update acc;
+
+// UPSERT — insert or update based on external ID
+Account[] accts = getExternalData();
+upsert accts External_Id__c; // Match on this field
+
+// DELETE — move to Recycle Bin
+delete acc;
+
+// UNDELETE — restore from Recycle Bin
+undelete acc;
+
+// MERGE — combine duplicate records
+Account master = [SELECT Id FROM Account WHERE Name = 'Acme'];
+Account dupe = [SELECT Id FROM Account WHERE Name = 'ACME Corp'];
+merge master dupe;
+// dupe's children re-parented to master</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Bulkification Pattern</h3>
+<pre><code>// ❌ BAD — DML inside loop (governor limit!)
+for (Contact c : contacts) {
+    c.Status__c = 'Active';
+    update c; // 150 DML limit hit at record 150!
+}
+
+// ✅ GOOD — Collect and execute once
+for (Contact c : contacts) {
+    c.Status__c = 'Active';
+}
+update contacts; // ONE DML for all records</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Database Methods (Partial Success)</h3>
+<pre><code>// Database.insert allows partial success
+Database.SaveResult[] results = Database.insert(
+    accounts, false // allOrNone = false
+);
+
+for (Database.SaveResult sr : results) {
+    if (sr.isSuccess()) {
+        System.debug('Inserted: ' + sr.getId());
+    } else {
+        for (Database.Error err : sr.getErrors()) {
+            System.debug('Error: ' + err.getMessage());
+            System.debug('Fields: ' + err.getFields());
+        }
+    }
+}
+
+// vs. standard DML (all or nothing):
+// insert accounts; ← throws exception if ANY fail</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>DML Statement vs Database Method</h3>
+                        <table>
+                            <tr><th>Feature</th><th>DML Statement</th><th>Database Method</th></tr>
+                            <tr><td>Partial success</td><td>❌ All or nothing</td><td>✅ Partial allowed</td></tr>
+                            <tr><td>Error handling</td><td>try/catch</td><td>SaveResult[]</td></tr>
+                            <tr><td>Syntax</td><td><code>insert accs;</code></td><td><code>Database.insert(accs, false)</code></td></tr>
+                            <tr><td>Use when</td><td>Must all succeed together</td><td>Best-effort batch</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 5: Triggers -->
+        <div class="slide" data-section="apex">
+            <h2>Triggers — Automating on Record Changes</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Triggers execute Apex code before or after DML events on records. Always use a handler pattern — never put logic directly in the trigger.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Trigger Syntax & Events</h3>
+<pre><code>// AccountTrigger.trigger
+trigger AccountTrigger on Account (
+    before insert, before update, before delete,
+    after insert, after update, after delete, 
+    after undelete
+) {
+    AccountTriggerHandler handler = new AccountTriggerHandler();
+    
+    if (Trigger.isBefore) {
+        if (Trigger.isInsert) handler.beforeInsert(Trigger.new);
+        if (Trigger.isUpdate) handler.beforeUpdate(Trigger.new, Trigger.oldMap);
+        if (Trigger.isDelete) handler.beforeDelete(Trigger.old);
+    }
+    if (Trigger.isAfter) {
+        if (Trigger.isInsert) handler.afterInsert(Trigger.new);
+        if (Trigger.isUpdate) handler.afterUpdate(Trigger.new, Trigger.oldMap);
+        if (Trigger.isDelete) handler.afterDelete(Trigger.old);
+    }
+}</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Trigger Context Variables</h3>
+                        <table>
+                            <tr><th>Variable</th><th>Description</th></tr>
+                            <tr><td><code>Trigger.new</code></td><td>List of NEW records (insert/update)</td></tr>
+                            <tr><td><code>Trigger.old</code></td><td>List of OLD records (update/delete)</td></tr>
+                            <tr><td><code>Trigger.newMap</code></td><td>Map&lt;Id, SObject&gt; of new records</td></tr>
+                            <tr><td><code>Trigger.oldMap</code></td><td>Map&lt;Id, SObject&gt; of old records</td></tr>
+                            <tr><td><code>Trigger.isInsert</code></td><td>Boolean — is this an insert?</td></tr>
+                            <tr><td><code>Trigger.isBefore</code></td><td>Boolean — is this before DML?</td></tr>
+                            <tr><td><code>Trigger.size</code></td><td>Total records in trigger batch</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Handler Pattern (Best Practice)</h3>
+<pre><code>public class AccountTriggerHandler {
+    
+    public void beforeUpdate(List&lt;Account&gt; newAccs, 
+                             Map&lt;Id, Account&gt; oldMap) {
+        List&lt;Account&gt; changedIndustry = new List&lt;Account&gt;();
+        
+        for (Account acc : newAccs) {
+            Account old = oldMap.get(acc.Id);
+            // Only process records where field actually changed
+            if (acc.Industry != old.Industry) {
+                changedIndustry.add(acc);
+            }
+        }
+        
+        if (!changedIndustry.isEmpty()) {
+            updateRelatedContacts(changedIndustry);
+        }
+    }
+    
+    private void updateRelatedContacts(List&lt;Account&gt; accs) {
+        // Bulkified helper logic
+        List&lt;Contact&gt; toUpdate = [
+            SELECT Id, Account.Industry 
+            FROM Contact 
+            WHERE AccountId IN :accs
+        ];
+        for (Contact c : toUpdate) {
+            c.Industry__c = c.Account.Industry;
+        }
+        update toUpdate;
+    }
+}</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Before vs After — When to Use</h3>
+                        <table>
+                            <tr><th>Use Before</th><th>Use After</th></tr>
+                            <tr><td>Validate field values</td><td>Update related/child records</td></tr>
+                            <tr><td>Set default values</td><td>Send email notifications</td></tr>
+                            <tr><td>Modify same record (no DML needed!)</td><td>Create audit log records</td></tr>
+                            <tr><td>Prevent save with addError()</td><td>Call external systems</td></tr>
+                        </table>
+                        <p style="margin-top:8px;"><small><strong>Rule:</strong> Use <code>before</code> to modify the SAME record (it's free — no extra DML). Use <code>after</code> when you need the Id (insert) or need to modify OTHER records.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 6: Governor Limits -->
+        <div class="slide" data-section="apex">
+            <h2>Governor Limits — The #1 Interview Topic</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Salesforce is multi-tenant — one org's bad code can't bring down others. Governor limits enforce fair resource usage per transaction.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Critical Limits (Synchronous)</h3>
+                        <table>
+                            <tr><th>Resource</th><th>Limit</th></tr>
+                            <tr><td>SOQL queries</td><td><strong>100</strong> per transaction</td></tr>
+                            <tr><td>SOQL rows returned</td><td><strong>50,000</strong> rows</td></tr>
+                            <tr><td>DML statements</td><td><strong>150</strong> per transaction</td></tr>
+                            <tr><td>DML rows</td><td><strong>10,000</strong> records</td></tr>
+                            <tr><td>Callouts</td><td><strong>100</strong> per transaction</td></tr>
+                            <tr><td>CPU time</td><td><strong>10,000 ms</strong></td></tr>
+                            <tr><td>Heap size</td><td><strong>6 MB</strong> (sync) / 12 MB (async)</td></tr>
+                            <tr><td>Future calls</td><td><strong>50</strong> per transaction</td></tr>
+                        </table>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Check Limits at Runtime</h3>
+<pre><code>System.debug('SOQL queries used: ' + 
+    Limits.getQueries() + '/' + Limits.getLimitQueries());
+System.debug('DML used: ' + 
+    Limits.getDmlStatements() + '/' + Limits.getLimitDmlStatements());
+System.debug('CPU time: ' + 
+    Limits.getCpuTime() + '/' + Limits.getLimitCpuTime());
+System.debug('Heap: ' + 
+    Limits.getHeapSize() + '/' + Limits.getLimitHeapSize());</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>How to Avoid Hitting Limits</h3>
+<pre><code>// ❌ SOQL inside loop (100 limit)
+for (Account acc : accounts) {
+    List&lt;Contact&gt; cons = [SELECT Id FROM Contact 
+                          WHERE AccountId = :acc.Id];
+}
+
+// ✅ Query ONCE, use Map to organize
+Map&lt;Id, List&lt;Contact&gt;&gt; contactsByAcct = new Map&lt;Id, List&lt;Contact&gt;&gt;();
+for (Contact c : [SELECT Id, AccountId FROM Contact
+                  WHERE AccountId IN :accounts]) {
+    if (!contactsByAcct.containsKey(c.AccountId)) {
+        contactsByAcct.put(c.AccountId, new List&lt;Contact&gt;());
+    }
+    contactsByAcct.get(c.AccountId).add(c);
+}
+
+// ❌ DML inside loop (150 limit)
+for (Contact c : contacts) { update c; }
+
+// ✅ Collect all, DML once
+update contacts;
+
+// ❌ Multiple queries for same data
+Account a = [SELECT Name FROM Account WHERE Id = :id];
+Account b = [SELECT Industry FROM Account WHERE Id = :id];
+
+// ✅ One query, all fields
+Account a = [SELECT Name, Industry FROM Account WHERE Id = :id];</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 7: Collections Deep Dive -->
+        <div class="slide" data-section="apex">
+            <h2>Collections — List, Set, Map</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Collections are the foundation of bulkified Apex. Master these patterns and you'll never hit governor limits.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>List — Ordered, Allows Duplicates</h3>
+<pre><code>List&lt;String&gt; names = new List&lt;String&gt;();
+names.add('Alice');
+names.add('Bob');
+names.add('Alice'); // Allowed!
+System.debug(names[0]); // 'Alice'
+System.debug(names.size()); // 3
+
+// SOQL returns a List
+List&lt;Account&gt; accts = [SELECT Name FROM Account];
+
+// Common patterns
+names.sort(); // Alphabetical
+names.contains('Alice'); // true
+names.remove(0); // Remove by index
+List&lt;String&gt; sub = new List&lt;String&gt;(names); // Clone</code></pre>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Set — Unordered, No Duplicates</h3>
+<pre><code>Set&lt;Id&gt; accountIds = new Set&lt;Id&gt;();
+accountIds.add('001XX000003AAA');
+accountIds.add('001XX000003AAA'); // Ignored!
+System.debug(accountIds.size()); // 1
+
+// Perfect for: collecting unique IDs
+Set&lt;Id&gt; parentIds = new Set&lt;Id&gt;();
+for (Contact c : contacts) {
+    parentIds.add(c.AccountId);
+}
+// Use in SOQL: WHERE Id IN :parentIds
+
+// Convert List → Set (remove dupes)
+Set&lt;String&gt; unique = new Set&lt;String&gt;(namesList);</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>Map — Key → Value Lookup</h3>
+<pre><code>// The MOST important collection in Apex
+Map&lt;Id, Account&gt; acctMap = new Map&lt;Id, Account&gt;(
+    [SELECT Id, Name FROM Account WHERE Id IN :ids]
+);
+// ↑ SOQL result directly into Map! (keys = record Ids)
+
+// O(1) lookup by Id:
+Account target = acctMap.get(someId);
+
+// Common patterns:
+// 1. Build lookup map from query
+Map&lt;String, Decimal&gt; priceMap = new Map&lt;String, Decimal&gt;();
+for (Product2 p : products) {
+    priceMap.put(p.ProductCode, p.UnitPrice);
+}
+
+// 2. Group records by parent
+Map&lt;Id, List&lt;Contact&gt;&gt; byAccount = new Map&lt;Id, List&lt;Contact&gt;&gt;();
+for (Contact c : contacts) {
+    if (!byAccount.containsKey(c.AccountId)) {
+        byAccount.put(c.AccountId, new List&lt;Contact&gt;());
+    }
+    byAccount.get(c.AccountId).add(c);
+}
+
+// 3. Check existence
+if (acctMap.containsKey(targetId)) { ... }
+
+// Map from SOQL (shortcut!)
+Map&lt;Id, Account&gt; m = new Map&lt;Id, Account&gt;(
+    [SELECT Id, Name FROM Account]
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 8: Asynchronous Apex -->
+        <div class="slide" data-section="apex">
+            <h2>Asynchronous Apex — Beyond the Transaction</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">When you need higher limits, callouts from triggers, or scheduled processing — use async Apex. Each method has different strengths.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>@future — Simple Async</h3>
+<pre><code>// Fire-and-forget. No return value. No chaining.
+public class CalloutService {
+    @future(callout=true)
+    public static void sendToExternal(Set&lt;Id&gt; recordIds) {
+        // Higher limits: 60s timeout, 12MB heap
+        List&lt;Account&gt; accts = [SELECT Name, Phone
+            FROM Account WHERE Id IN :recordIds];
+        // Make HTTP callout...
+    }
+}
+
+// Limitations:
+// - Can't call @future from @future
+// - Can't call from Batch
+// - Parameters: only primitives or collections of primitives
+// - No tracking (fire & forget)</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Queueable — Modern Async</h3>
+<pre><code>public class ProcessRecordsJob implements Queueable {
+    private List&lt;Account&gt; accounts;
+    
+    public ProcessRecordsJob(List&lt;Account&gt; accts) {
+        this.accounts = accts;
+    }
+    
+    public void execute(QueueableContext ctx) {
+        // Process records...
+        // Can chain: enqueue another job
+        if (moreWork) {
+            System.enqueueJob(new ProcessRecordsJob(remaining));
+        }
+    }
+}
+
+// Enqueue:
+Id jobId = System.enqueueJob(new ProcessRecordsJob(accts));
+
+// Advantages over @future:
+// ✅ Can pass complex objects (sObjects, custom classes)
+// ✅ Can chain jobs (one after another)
+// ✅ Returns a Job ID for monitoring
+// ✅ Can implement Database.AllowsCallouts</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Batch Apex — Large Data Volumes</h3>
+<pre><code>public class CleanupBatch implements 
+    Database.Batchable&lt;SObject&gt;, Database.Stateful {
+    
+    public Integer recordsProcessed = 0; // Stateful!
+    
+    // 1. Collect records to process
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        return Database.getQueryLocator(
+            'SELECT Id FROM Account WHERE LastModifiedDate < LAST_YEAR'
+        );
+    }
+    
+    // 2. Process in chunks (default 200)
+    public void execute(Database.BatchableContext bc, 
+                        List&lt;Account&gt; scope) {
+        delete scope;
+        recordsProcessed += scope.size();
+    }
+    
+    // 3. Finish (send email, chain next batch)
+    public void finish(Database.BatchableContext bc) {
+        System.debug('Processed: ' + recordsProcessed);
+    }
+}
+
+// Execute (200 records per batch by default):
+Database.executeBatch(new CleanupBatch(), 200);
+// For callouts: use batch size 1-100</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>When to Use What</h3>
+                        <table>
+                            <tr><th>Method</th><th>Use When</th><th>Limit</th></tr>
+                            <tr><td>@future</td><td>Simple callout from trigger</td><td>50/txn</td></tr>
+                            <tr><td>Queueable</td><td>Complex processing, chaining</td><td>50/txn</td></tr>
+                            <tr><td>Batch</td><td>10K+ records, long processes</td><td>50M rows</td></tr>
+                            <tr><td>Schedulable</td><td>Recurring (hourly/daily)</td><td>100 scheduled</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 9: Exception Handling & Best Practices -->
+        <div class="slide" data-section="apex">
+            <h2>Exception Handling & Best Practices</h2>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Exception Hierarchy</h3>
+<pre><code>// Apex exception types
+try {
+    insert accounts;
+} catch (DmlException e) {
+    // Specific DML failure
+    System.debug('DML Error: ' + e.getDmlMessage(0));
+    System.debug('Field: ' + e.getDmlFields(0));
+    System.debug('Status: ' + e.getDmlStatusCode(0));
+} catch (QueryException e) {
+    // SOQL failure (no rows, too many rows)
+    System.debug('Query Error: ' + e.getMessage());
+} catch (CalloutException e) {
+    // HTTP callout failure
+    System.debug('Callout Error: ' + e.getMessage());
+} catch (Exception e) {
+    // Catch-all (always last)
+    System.debug('Type: ' + e.getTypeName());
+    System.debug('Message: ' + e.getMessage());
+    System.debug('Stack: ' + e.getStackTraceString());
+} finally {
+    // Always runs (cleanup)
+}</code></pre>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Custom Exception</h3>
+<pre><code>public class ServiceException extends Exception {}
+
+// Usage:
+if (accounts.isEmpty()) {
+    throw new ServiceException('No accounts found for criteria');
+}
+
+// AuraHandledException (for LWC)
+throw new AuraHandledException('User-friendly message');
+// ↑ This is what LWC error.body.message shows</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card highlight fade-in delay-1">
+                        <h3>Apex Best Practices Checklist</h3>
+                        <ul>
+                            <li><strong>Bulkify everything</strong> — no SOQL/DML inside loops</li>
+                            <li><strong>One trigger per object</strong> — use handler classes</li>
+                            <li><strong>with sharing by default</strong> — security first</li>
+                            <li><strong>75%+ test coverage</strong> — with meaningful assertions</li>
+                            <li><strong>Use maps for lookups</strong> — O(1) vs O(n) loops</li>
+                            <li><strong>Avoid hardcoded IDs</strong> — use Custom Labels/Custom Metadata</li>
+                            <li><strong>Separation of concerns</strong> — Trigger → Handler → Service → Selector</li>
+                            <li><strong>Null-check everything</strong> — prevent NullPointerException</li>
+                            <li><strong>Limit-aware patterns</strong> — check Limits class in long operations</li>
+                            <li><strong>Meaningful test names</strong> — <code>testBulkInsert_200Records_NoErrors</code></li>
+                        </ul>
+                    </div>
+                    <div class="card fade-in delay-2">
+                        <h3>Testing Pattern</h3>
+<pre><code>@IsTest
+private class AccountServiceTest {
+    @TestSetup
+    static void setup() {
+        // Create test data ONCE for all methods
+        List&lt;Account&gt; accts = TestDataFactory.createAccounts(200);
+        insert accts;
+    }
+    
+    @IsTest
+    static void testBulkInsert_Success() {
+        // Given
+        List&lt;Account&gt; testAccs = [SELECT Id FROM Account];
+        
+        // When
+        Test.startTest();
+        AccountService.processAccounts(testAccs);
+        Test.stopTest(); // Forces async to complete
+        
+        // Then
+        List&lt;Account&gt; results = [SELECT Status__c FROM Account];
+        for (Account a : results) {
+            System.assertEquals('Processed', a.Status__c,
+                'Each account should be marked processed');
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 10: Apex Design Patterns -->
+        <div class="slide" data-section="apex">
+            <h2>Apex Design Patterns — Enterprise Architecture</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Real-world Salesforce projects use layered architecture. These patterns make code maintainable, testable, and scalable.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Service Layer Pattern</h3>
+<pre><code>// Service class: business logic lives HERE
+public with sharing class OpportunityService {
+    
+    public static void closeWonOpportunities(Set&lt;Id&gt; oppIds) {
+        // 1. Validate
+        if (oppIds == null || oppIds.isEmpty()) return;
+        
+        // 2. Query (use Selector)
+        List&lt;Opportunity&gt; opps = OpportunitySelector.getByIds(oppIds);
+        
+        // 3. Business logic
+        List&lt;Opportunity&gt; toUpdate = new List&lt;Opportunity&gt;();
+        for (Opportunity opp : opps) {
+            if (opp.Amount > 0 && opp.HasProducts__c) {
+                opp.StageName = 'Closed Won';
+                opp.CloseDate = Date.today();
+                toUpdate.add(opp);
+            }
+        }
+        
+        // 4. DML (use Unit of Work pattern for complex)
+        if (!toUpdate.isEmpty()) {
+            update toUpdate;
+        }
+    }
+}
+
+// Called from: Trigger, LWC Controller, Batch, Flow</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Selector Pattern</h3>
+<pre><code>// Centralize ALL queries for an object
+public with sharing class OpportunitySelector {
+    
+    public static List&lt;Opportunity&gt; getByIds(Set&lt;Id&gt; ids) {
+        return [SELECT Id, Name, StageName, Amount,
+                       CloseDate, HasProducts__c,
+                       Account.Name
+                FROM Opportunity
+                WHERE Id IN :ids];
+    }
+    
+    public static List&lt;Opportunity&gt; getOpenByAccount(Id accountId) {
+        return [SELECT Id, Name, Amount, StageName
+                FROM Opportunity
+                WHERE AccountId = :accountId
+                AND IsClosed = false
+                ORDER BY CloseDate ASC];
+    }
+}</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>Architecture Layers</h3>
+                        <table>
+                            <tr><th>Layer</th><th>Responsibility</th><th>Example</th></tr>
+                            <tr><td>Trigger</td><td>Route events only</td><td><code>AccountTrigger</code></td></tr>
+                            <tr><td>Handler</td><td>Filter changed records</td><td><code>AccountTriggerHandler</code></td></tr>
+                            <tr><td>Service</td><td>Business logic</td><td><code>AccountService</code></td></tr>
+                            <tr><td>Selector</td><td>SOQL queries</td><td><code>AccountSelector</code></td></tr>
+                            <tr><td>Domain</td><td>Record validation</td><td><code>Accounts</code> (plural)</td></tr>
+                            <tr><td>Controller</td><td>LWC @AuraEnabled bridge</td><td><code>AccountController</code></td></tr>
+                        </table>
+                        <p style="margin-top:8px;"><small>Each layer only talks to adjacent layers. Controller → Service → Selector. Never Controller → SOQL directly.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- APEX SLIDE 11: Modern Apex Features (2023-2026) -->
+        <div class="slide" data-section="apex">
+            <h2>Modern Apex Features (2023-2026)</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">These features are now GA and widely used in production. Interviewers expect you to know them.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Safe Navigation Operator (?.) </h3>
+<pre><code>// BEFORE: Null checks everywhere
+String name = null;
+if (acc != null &amp;&amp; acc.Owner != null) {
+    name = acc.Owner.Name;
+}
+
+// AFTER: Safe navigation (Spring '21+)
+String name = acc?.Owner?.Name;
+// Returns null if ANY part is null — no NullPointerException!
+
+// Works with methods too:
+Integer len = myString?.length();
+// Returns null (not exception) if myString is null
+
+// Works with collections:
+String first = myList?.get(0)?.Name;
+
+// Works in SOQL:
+List&lt;Contact&gt; cons = [SELECT Account?.Name FROM Contact];
+
+// Common patterns:
+String msg = error?.body?.message ?? 'Unknown error';
+Boolean isActive = record?.IsActive__c == true;</code></pre>
+                    </div>
+                    <div class="card fade-in delay-1">
+                        <h3>Null Coalescing Operator (??)</h3>
+<pre><code>// Returns left side if not null, otherwise right side
+String name = inputName ?? 'Default Name';
+// Equivalent to: inputName != null ? inputName : 'Default'
+
+// Chain multiple fallbacks:
+String label = customLabel ?? fieldLabel ?? 'Untitled';
+
+// With safe navigation:
+String city = account?.BillingCity ?? 'No City';
+
+// In assignments:
+Integer count = existingCount ?? 0;</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Switch Statement</h3>
+<pre><code>// Clean alternative to long if/else chains
+switch on stage {
+    when 'Prospecting', 'Qualification' {
+        priority = 'Low';
+    }
+    when 'Proposal', 'Negotiation' {
+        priority = 'Medium';
+    }
+    when 'Closed Won' {
+        priority = 'Completed';
+    }
+    when else {
+        priority = 'Unknown';
+    }
+}
+
+// Switch on SObject type:
+switch on record {
+    when Account acc {
+        System.debug('Account: ' + acc.Name);
+    }
+    when Contact con {
+        System.debug('Contact: ' + con.Email);
+    }
+    when null {
+        System.debug('Null record');
+    }
+    when else {
+        System.debug('Other type');
+    }
+}
+
+// Switch on Enum:
+switch on season {
+    when WINTER { return 'Cold'; }
+    when SUMMER { return 'Hot'; }
+    when else { return 'Moderate'; }
+}</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>User Mode Database Operations</h3>
+<pre><code>// Enforce FLS + CRUD + Sharing in SOQL (Spring '23+)
+// BEFORE: with sharing class + manual checks
+List&lt;Account&gt; accts = [
+    SELECT Name, Phone, Secret_Field__c
+    FROM Account
+    WITH USER_MODE  // Strips fields user can't see!
+];
+
+// Database class with AccessLevel:
+List&lt;Account&gt; results = Database.query(
+    'SELECT Name FROM Account',
+    AccessLevel.USER_MODE  // Enforces all security
+);
+
+// DML with User Mode:
+Database.insert(records, AccessLevel.USER_MODE);
+Database.update(records, AccessLevel.USER_MODE);
+
+// System Mode (bypass security — use carefully):
+Database.query(q, AccessLevel.SYSTEM_MODE);
+
+// stripInaccessible (alternative approach):
+SObjectAccessDecision decision = Security.stripInaccessible(
+    AccessType.READABLE, records
+);
+List&lt;Account&gt; sanitized = decision.getRecords();
+// Fields user lacks FLS for are removed</code></pre>
+                        <p style="margin-top:8px;"><small><strong>Interview tip:</strong> Always mention USER_MODE as the modern best practice for enforcing security. It replaces manual FLS/CRUD checks and WITH SECURITY_ENFORCED.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APEX SLIDE 12: Custom Permissions, Custom Labels & Custom Metadata -->
+        <div class="slide" data-section="apex">
+            <h2>Custom Permissions, Labels & Metadata in Apex</h2>
+            <p style="margin-bottom:15px; color:#8b949e;">Configuration-driven development — change behavior without code changes.</p>
+            <div class="two-col">
+                <div>
+                    <div class="card fade-in">
+                        <h3>Custom Permissions</h3>
+<pre><code>// Check if current user has a Custom Permission
+Boolean canApprove = FeatureManagement.checkPermission(
+    'Can_Approve_Large_Deals'
+);
+
+if (canApprove) {
+    // User has this permission (via Permission Set)
+    approveRecord(recordId);
+} else {
+    throw new AuraHandledException('Insufficient permissions');
+}
+
+// In LWC — check from client side:
+import hasPermission from '@salesforce/customPermission/Can_Approve_Large_Deals';
+
+// In template:
+// &lt;template lwc:if={hasPermission}&gt;
+//     &lt;lightning-button label="Approve"&gt;&lt;/lightning-button&gt;
+// &lt;/template&gt;
+
+// Use cases:
+// - Feature flags (enable/disable features per user group)
+// - Role-based UI (show/hide buttons)
+// - Tiered access (Basic vs Premium users)</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <div class="card fade-in delay-1">
+                        <h3>Custom Metadata Types in Apex</h3>
+<pre><code>// Query CMT records (NO SOQL governor limit cost!)
+List&lt;Validation_Rule__mdt&gt; rules = 
+    Validation_Rule__mdt.getAll().values();
+
+// Or query specific records:
+List&lt;Validation_Rule__mdt&gt; rules = [
+    SELECT Field_Name__c, Error_Message__c, 
+           Expression__c, Is_Active__c
+    FROM Validation_Rule__mdt
+    WHERE Is_Active__c = true
+    AND Object_Name__c = 'Account'
+];
+// ↑ This does NOT count against 100 SOQL limit!
+
+// Use for:
+// - Configuration (field mappings, validation rules)
+// - Feature toggles (enable/disable per org)
+// - Integration endpoints (URLs per environment)
+// - App settings (no hardcoded values)
+
+// Custom Labels in Apex:
+String msg = System.Label.Error_Required_Field;
+// Automatically translated per user's language</code></pre>
+                    </div>
+                    <div class="card highlight fade-in delay-2">
+                        <h3>New in Apex (2024-2026)</h3>
+                        <table>
+                            <tr><th>Feature</th><th>Version</th><th>Description</th></tr>
+                            <tr><td>?. operator</td><td>Spring '21</td><td>Safe navigation — no NullPointerException</td></tr>
+                            <tr><td>?? operator</td><td>Winter '24</td><td>Null coalescing — default values</td></tr>
+                            <tr><td>USER_MODE</td><td>Spring '23</td><td>Enforce FLS/CRUD/Sharing in queries</td></tr>
+                            <tr><td>Assert class</td><td>Spring '23</td><td>Assert.areEqual() replaces System.assertEquals()</td></tr>
+                            <tr><td>Set literals</td><td>Spring '24</td><td>Set&lt;String&gt; s = {'a', 'b', 'c'};</td></tr>
+                            <tr><td>Multi-currency SOQL</td><td>Summer '24</td><td>convertCurrency() in SOQL</td></tr>
+                            <tr><td>Apex Guru AI</td><td>Winter '25</td><td>AI-powered code analysis in Setup</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================================================== -->
+    </div> <!-- end .deck -->
+
+    <!-- Menu button + Slide Menu -->
+    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" title="Table of Contents">&#x2630;</button>
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="slide-menu" id="slideMenu">
+        <input type="text" class="slide-menu-search" id="menuSearch" placeholder="Search slides..." oninput="filterMenu(this.value)">
+        <div id="menuItems"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <button id="prevBtn" onclick="prevSlide()" aria-label="Previous">&larr; Prev</button>
+        <button id="nextBtn" onclick="nextSlide()" aria-label="Next">Next &rarr;</button>
+    </div>
+
+    <script src="slides.js"></script>
+</body>
+</html>

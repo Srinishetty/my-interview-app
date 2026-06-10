@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Salesforce Developer Study Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg: #0d1117;
+            --bg-card: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --blue: #58a6ff;
+            --green: #238636;
+            --purple: #bc8cff;
+            --orange: #f0883e;
+            --red: #da3633;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+            border-bottom: 1px solid var(--border);
+        }
+        .header h1 {
+            font-size: clamp(1.8em, 5vw, 3em);
+            background: linear-gradient(90deg, #58a6ff, #bc8cff, #f0883e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: clamp(0.9em, 2.5vw, 1.1em);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .header .badge-row {
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .header .badge-row span {
+            background: #21262d;
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: var(--text-muted);
+        }
+
+        /* Topic Grid */
+        .topics {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .topic-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 24px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--card-accent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .topic-card:hover {
+            border-color: var(--card-accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        .topic-card:hover::before { opacity: 1; }
+        .topic-card:active { transform: scale(0.97); }
+
+        .topic-card .icon {
+            font-size: 2.2em;
+            width: 56px; height: 56px;
+            display: flex; align-items: center; justify-content: center;
+            background: #21262d;
+            border-radius: 12px;
+        }
+        .topic-card h2 {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .topic-card p {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .topic-card .meta {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 8px;
+            font-size: 0.8em;
+            color: var(--text-muted);
+        }
+        .topic-card .meta span {
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 16px; right: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+        .theme-toggle:hover { border-color: var(--blue); }
+
+        /* Light theme */
+        body.light {
+            --bg: #ffffff;
+            --bg-card: #f6f8fa;
+            --border: #d1d9e0;
+            --text: #1f2328;
+            --text-muted: #6e7781;
+            --blue: #0550ae;
+            --green: #1a7f37;
+            --purple: #6639ba;
+            --orange: #953800;
+        }
+        body.light .header { background: linear-gradient(180deg, #f6f8fa 0%, #ffffff 100%); }
+        body.light .topic-card .icon { background: #eaeef2; }
+        body.light .header .badge-row span { background: #eaeef2; border-color: #d1d9e0; }
+        body.light .topic-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            font-size: 0.85em;
+            border-top: 1px solid var(--border);
+        }
+        .footer a { color: var(--blue); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .header { padding: 40px 16px 30px; }
+            .topics { padding: 24px 16px 40px; gap: 14px; grid-template-columns: 1fr; }
+            .topic-card { padding: 22px 20px; flex-direction: row; align-items: center; gap: 16px; }
+            .topic-card .icon { font-size: 1.6em; width: 48px; height: 48px; min-width: 48px; border-radius: 10px; }
+            .topic-card h2 { font-size: 1.1em; }
+            .topic-card p { display: none; }
+            .topic-card .meta { padding-top: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">&#x2600;&#xFE0F;</button>
+
+    <header class="header">
+        <h1>&#x26A1; Salesforce Developer Study Guide</h1>
+        <p>Comprehensive study material covering LWC, Apex, Flow, Visualforce, and Integration. Tap a topic to start learning.</p>
+        <div class="badge-row">
+            <span>&#x1F4D6; 94 Slides</span>
+            <span>&#x2753; 90+ Q&amp;A</span>
+            <span>&#x1F4C5; 2024-2026</span>
+            <span>&#x1F4F1; Mobile Friendly</span>
+        </div>
+    </header>
+
+    <main class="topics">
+        <a href="lwc.html" class="topic-card" style="--card-accent: #58a6ff;">
+            <div class="icon">&#x26A1;</div>
+            <div>
+                <h2>Lightning Web Components</h2>
+                <p>Foundations, lifecycle, reactivity, decorators, communication patterns, Shadow DOM, LDS, GraphQL wire adapter, and advanced architecture.</p>
+                <div class="meta">
+                    <span>&#x1F4CA; 62 slides</span>
+                    <span>&#x2753; 90+ Q&amp;A</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="apex.html" class="topic-card" style="--card-accent: #f0883e;">
+            <div class="icon">&#x2615;</div>
+            <div>
+                <h2>Apex Programming</h2>
+                <p>Classes, triggers, SOQL/DML, governor limits, async patterns, testing, modern features (switch, ?., User Mode).</p>
+                <div class="meta">
+                    <span>&#x1F4CA; 14 slides</span>
+                    <span>&#x1F525; Core skill</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="flow.html" class="topic-card" style="--card-accent: #bc8cff;">
+            <div class="icon">&#x1F504;</div>
+            <div>
+                <h2>Salesforce Flow</h2>
+                <p>Screen Flows, Record-Triggered Flows, Subflows, Decision Elements, Error Handling, and best practices.</p>
+                <div class="meta">
+                    <span>&#x1F4CA; 8 slides</span>
+                    <span>&#x2699;&#xFE0F; Declarative</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="visualforce.html" class="topic-card" style="--card-accent: #7ee787;">
+            <div class="icon">&#x1F4C4;</div>
+            <div>
+                <h2>Visualforce</h2>
+                <p>Page architecture, controllers, component communication, view state, and migration strategies to LWC.</p>
+                <div class="meta">
+                    <span>&#x1F4CA; 5 slides</span>
+                    <span>&#x1F504; Legacy</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="integration.html" class="topic-card" style="--card-accent: #da3633;">
+            <div class="icon">&#x1F517;</div>
+            <div>
+                <h2>Integration</h2>
+                <p>REST/SOAP APIs, Platform Events, Pub/Sub API (gRPC), Named Credentials, callout patterns, and best practices.</p>
+                <div class="meta">
+                    <span>&#x1F4CA; 8 slides</span>
+                    <span>&#x1F310; Enterprise</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="mock-interview.html" class="topic-card" style="--card-accent: #f0883e; grid-column: 1 / -1;">
+            <div class="icon">&#x1F3A4;</div>
+            <div>
+                <h2>&#x1F525; Mock Interview (Beginner)</h2>
+                <p>Practice with 16 real Salesforce developer interview questions. Self-rate your answers, track your score, and identify weak areas.</p>
+                <div class="meta">
+                    <span>&#x2753; 16 questions</span>
+                    <span>&#x1F3AF; All topics</span>
+                    <span>&#x1F4CA; Score tracking</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="senior-interview.html" class="topic-card" style="--card-accent: #da3633; grid-column: 1 / -1;">
+            <div class="icon">&#x1F525;</div>
+            <div>
+                <h2>&#x1F3AF; Senior Interview (5 YOE)</h2>
+                <p>4-round interview simulation: Technical Deep Dive, System Design, Scenario Problem-Solving, and Leadership. Timed. With follow-up questions.</p>
+                <div class="meta">
+                    <span>&#x23F1; 45 min</span>
+                    <span>&#x2753; 14 questions</span>
+                    <span>&#x1F4AA; Senior level</span>
+                    <span>&#x1F504; 4 rounds</span>
+                </div>
+            </div>
+        </a>
+    </main>
+
+    <footer class="footer">
+        <p>Salesforce Developer Study Guide &mdash; Built for mobile &amp; desktop &mdash; 2024-2026 Features</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light');
+            document.getElementById('themeBtn').innerHTML = isLight ? '&#x1F319;' : '&#x2600;&#xFE0F;';
+            localStorage.setItem('study-theme', isLight ? 'light' : 'dark');
+        }
+        // Restore theme
+        if (localStorage.getItem('study-theme') === 'light') {
+            document.body.classList.add('light');
+            document.getElementById('themeBtn').innerHTML = '&#x1F319;';
+        }
+    </script>
+</body>
+</html>
