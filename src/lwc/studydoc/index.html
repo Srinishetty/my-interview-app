@@ -91,8 +91,6 @@
             gap: 12px;
             position: relative;
             overflow: hidden;
-            touch-action: pan-y;
-            -webkit-user-drag: none;
         }
         .topic-card::before {
             content: '';
@@ -316,43 +314,7 @@
             document.getElementById('themeBtn').innerHTML = '&#x1F319;';
         }
 
-        // Prevent accidental navigation when users perform small horizontal swipes
-        (function() {
-            const THRESHOLD = 10; // px horizontal movement to consider a swipe
-            document.querySelectorAll('.topic-card').forEach(card => {
-                let startX = 0;
-                let startY = 0;
-                let moved = false;
-
-                card.addEventListener('touchstart', e => {
-                    if (!e.touches || e.touches.length === 0) return;
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
-                    moved = false;
-                }, {passive: true});
-
-                // Use a non-passive listener so we can call preventDefault() to stop
-                // the browser's horizontal history-swipe when the user is panning.
-                card.addEventListener('touchmove', function(e) {
-                    if (!e.touches || e.touches.length === 0) return;
-                    const dx = e.touches[0].clientX - startX;
-                    const dy = e.touches[0].clientY - startY;
-                    if (Math.abs(dx) > THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
-                        moved = true;
-                        // Prevent the browser from interpreting this as a history swipe
-                        // or horizontal navigation gesture.
-                        try { e.preventDefault(); } catch (err) {}
-                    }
-                }, {passive: false});
-
-                card.addEventListener('click', e => {
-                    if (moved) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                }, true);
-            });
-        })();
+        
     </script>
 </body>
 </html>
