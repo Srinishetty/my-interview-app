@@ -100,29 +100,7 @@
         if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
     });
 
-    // Touch swipe navigation (mobile)
-    let touchStartX = 0, touchStartY = 0;
-    function isZoomed() {
-        if (window.visualViewport && typeof window.visualViewport.scale === 'number') {
-            return window.visualViewport.scale > 1.05;
-        }
-        return false;
-    }
-
-    document.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-    
-    document.addEventListener('touchend', (e) => {
-        if (isZoomed()) return;
-        const diffX = touchStartX - e.changedTouches[0].screenX;
-        const diffY = touchStartY - e.changedTouches[0].screenY;
-        if (Math.abs(diffX) > 70 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
-            if (diffX > 0) nextSlide();
-            else prevSlide();
-        }
-    }, { passive: true });
+    // Touch swipe navigation is disabled; users navigate with buttons only.
 
     // ===== FONT SIZE CONTROL =====
     let fontScale = 100;
